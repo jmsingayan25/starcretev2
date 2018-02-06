@@ -5,6 +5,18 @@
 /* List of miscellaneous functions */
 	// function getSiteContactInfo($db, $)
 
+	function getPurchaseOrderDetails($db, $unique_id){
+
+		$sql = "SELECT * FROM purchase_order
+				WHERE purchase_unique_id = '$unique_id'";
+
+		$result = mysqli_query($db, $sql);
+		$row = mysqli_fetch_assoc($result);
+
+		$po['purchase_order_no'] = $row['purchase_order_no'];		
+
+		return $po;
+	}
 	function getCountPlantPo($db, $office){
 
 		$sql = "SELECT purchase_order_no 
@@ -379,13 +391,11 @@
       	return $row['total'];
 	}
 
-	function getDeliveryBalance($db, $po_no_delivery, $po_id, $office){
+	function getDeliveryBalance($db, $unique_id){
 
-		$sql = "SELECT balance 
+		$sql = "SELECT SUM(balance) as balance 
 				FROM purchase_order 
-				WHERE purchase_order_no = '$po_no_delivery' 
-				AND office = '$office'
-				AND purchase_id = '$po_id'";
+				WHERE purchase_unique_id = '$unique_id'";
 			
 		$result = mysqli_query($db, $sql);
       	$row = mysqli_fetch_assoc($result);
@@ -393,13 +403,12 @@
       	return $row['balance'];
 	}
 
-	function getDeliveryDelivered($db, $po_no_delivery, $po_id, $office){
+	function getDeliveryDelivered($db, $po_no_delivery, $office){
 
 		$sql = "SELECT SUM(quantity) as quantity
 				FROM delivery
 				WHERE remarks = 'Delivered'
 				AND office = '$office'
-				AND fk_po_id = '$po_id'
 				AND po_no_delivery = '$po_no_delivery'";
 			// echo $sql;
 		$result = mysqli_query($db, $sql);
@@ -409,13 +418,12 @@
 
 	}
 
-	function getDeliveryOnDelivery($db, $po_no_delivery, $po_id, $office){
+	function getDeliveryOnDelivery($db, $po_no_delivery, $office){
 
 		$sql = "SELECT SUM(quantity) as quantity
 				FROM delivery
 				WHERE remarks = 'On Delivery'
 				AND office = '$office'
-				AND fk_po_id = '$po_id'
 				AND po_no_delivery = '$po_no_delivery'";
 			// echo $sql;
 		$result = mysqli_query($db, $sql);

@@ -518,7 +518,7 @@ session_start();
                 AND s.site_id = p.site_id
                 AND remarks = 'Delivered' 
                 GROUP BY delivery_id 
-                ORDER BY delivery_id DESC
+                ORDER BY date_delivery DESC
                 LIMIT $start, $limit";
                     // echo $query;
         $result = mysqli_query($db, $query);
@@ -708,7 +708,7 @@ session_start();
                 AND s.site_id = p.site_id
                 AND remarks = 'Delivered' 
                 GROUP BY delivery_id 
-                ORDER BY delivery_id DESC
+                ORDER BY date_delivery DESC
                 LIMIT $start, $limit";
                     // echo $query;
         $result = mysqli_query($db, $query);

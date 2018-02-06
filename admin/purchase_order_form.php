@@ -160,7 +160,7 @@ session_start();
     function add_contact_row(){
      $rowno=$("#contact_table tr").length;
      $rowno=$rowno+1;
-     $("#contact_table tr:last").after("<tr id='row_contact_"+$ronwo+"'><td class='col-md-8'><select id='contact_name[]' name='contact_name[]' class='form-control' required> <option value=''>Select</option></select></td><td><input type='button' value='Remove' class='btn btn-primary btn-md' onclick=delete_contact_row('row_contact_"+$rowno+"')></td></tr>");
+     $("#contact_table tr:last").after("<tr id='row_contact_"+$rowno+"'><td class='col-md-8'><select id='contact_name[]' name='contact_name[]' class='form-control' required> <option value=''>Select</option></select></td><td><input type='button' value='Remove' class='btn btn-primary btn-md' onclick=delete_contact_row('row_contact_"+$rowno+"')></td></tr>");
     }
 
     function delete_contact_row(rowno){
