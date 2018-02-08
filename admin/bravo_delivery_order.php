@@ -509,14 +509,14 @@ session_start();
         //      AND remarks = 'On Delivery' 
         //      ORDER BY delivery_id DESC LIMIT $start, $limit";
 
-    $query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, p.site_contact_name, c.client_name, GROUP_CONCAT(sc.site_contact_no SEPARATOR ', ') as site_contact_no
-                FROM delivery d, site s, site_contact_person p, client c, site_contact_number sc
+    $query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, c.client_name, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name
+                FROM delivery d, site s, site_contact_person p, client c, site_contact_number sc, purchase_order_contact poc
                 ".$string." ".$string_date."
                 AND s.client_id = c.client_id
-                AND p.site_contact_person_id = sc.site_contact_person_id
+                AND d.fk_po_id = poc.purchase_id
+                AND poc.site_contact_id = p.site_contact_person_id
                 AND d.site_id = s.site_id
-                AND s.site_id = p.site_id
-                AND remarks = 'On Delivery'
+                AND remarks = 'On Delivery' 
                 GROUP BY delivery_id 
                 ORDER BY delivery_id DESC
                 LIMIT $start, $limit";
@@ -707,13 +707,13 @@ session_start();
     //          ORDER BY delivery_id DESC
     //          LIMIT $start, $limit";
 
-    $query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, p.site_contact_name, c.client_name, GROUP_CONCAT(sc.site_contact_no SEPARATOR ', ') as site_contact_no
-                FROM delivery d, site s, site_contact_person p, client c, site_contact_number sc
+    $query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, c.client_name, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name
+                FROM delivery d, site s, site_contact_person p, client c, site_contact_number sc, purchase_order_contact poc
                 ".$string." ".$string_date."
                 AND s.client_id = c.client_id
-                AND p.site_contact_person_id = sc.site_contact_person_id
+                AND d.fk_po_id = poc.purchase_id
+                AND poc.site_contact_id = p.site_contact_person_id
                 AND d.site_id = s.site_id
-                AND s.site_id = p.site_id
                 AND remarks = 'On Delivery' 
                 GROUP BY delivery_id 
                 ORDER BY delivery_id DESC

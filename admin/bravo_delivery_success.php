@@ -401,7 +401,7 @@ session_start();
                                 <th class="col-md-1">Quantity</th>
                                 <th class="col-md-2"><input type="text" class="form-control" placeholder="Site Name" disabled></th>
                                 <th class="col-md-2">Address</th>
-                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Date Delivered" disabled></th>
+                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Date Deliver" disabled></th>
                                 <th class="col-md-1">Status</th>
                             </tr>
                         </thead>
@@ -509,13 +509,13 @@ session_start();
         //      ORDER BY date_delivery DESC
         //      LIMIT $start, $limit";
 
-        $query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery1 , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, p.site_contact_name, c.client_name, GROUP_CONCAT(sc.site_contact_no SEPARATOR ', ') as site_contact_no
-                FROM delivery d, site s, site_contact_person p, client c, site_contact_number sc
+        $query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery1 , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', '), c.client_name
+                FROM delivery d, site s, site_contact_person p, client c, site_contact_number sc, purchase_order_contact poc
                 ".$string." ".$string_date."
                 AND s.client_id = c.client_id
-                AND p.site_contact_person_id = sc.site_contact_person_id
+                AND d.fk_po_id = poc.purchase_id
+                AND poc.site_contact_id = p.site_contact_person_id
                 AND d.site_id = s.site_id
-                AND s.site_id = p.site_id
                 AND remarks = 'Delivered' 
                 GROUP BY delivery_id 
                 ORDER BY date_delivery DESC
@@ -591,7 +591,7 @@ session_start();
                                 <th class="col-md-1">Quantity</th>
                                 <th class="col-md-2"><input type="text" class="form-control" placeholder="Site Name" disabled></th>
                                 <th class="col-md-2">Address</th>
-                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Date Delivered" disabled></th>
+                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Date Deliver" disabled></th>
                                 <th class="col-md-1">Status</th>
                             </tr>
                         </thead>
@@ -699,13 +699,13 @@ session_start();
         //      ORDER BY date_delivery DESC
         //      LIMIT $start, $limit";
 
-        $query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery1 , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, p.site_contact_name, c.client_name, GROUP_CONCAT(sc.site_contact_no SEPARATOR ', ') as site_contact_no
-                FROM delivery d, site s, site_contact_person p, client c, site_contact_number sc
+         $query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery1 , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', '), c.client_name
+                FROM delivery d, site s, site_contact_person p, client c, site_contact_number sc, purchase_order_contact poc
                 ".$string." ".$string_date."
                 AND s.client_id = c.client_id
-                AND p.site_contact_person_id = sc.site_contact_person_id
+                AND d.fk_po_id = poc.purchase_id
+                AND poc.site_contact_id = p.site_contact_person_id
                 AND d.site_id = s.site_id
-                AND s.site_id = p.site_id
                 AND remarks = 'Delivered' 
                 GROUP BY delivery_id 
                 ORDER BY date_delivery DESC

@@ -501,14 +501,16 @@ session_start();
         $pagination.= "</ul></div>\n"; 
     }
 
-    $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.office, o.remarks, l.unit, s.site_name, s.site_address, p.site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase
-                FROM purchase_order o, batch_list l, site_contact_person p, site s
+    $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.office, o.remarks, l.unit, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase
+                FROM purchase_order o, purchase_order_contact c, batch_list l, site_contact_person p, site s
                 ".$string." ".$string_date."
                 AND o.site_id = s.site_id
-                AND o.contact_person_id = p.site_contact_person_id
+                AND o.purchase_id = c.purchase_id
+                AND c.site_contact_id = p.site_contact_person_id
                 AND o.item_no = l.item_no 
                 AND o.balance != 0  
                 AND DATE_FORMAT(date_purchase,'%Y-%m-%d') != ''
+                GROUP BY o.purchase_id
                 ORDER BY o.purchase_id DESC LIMIT $start, $limit";
 // echo $query;
     $result = mysqli_query($db, $query);
@@ -520,14 +522,14 @@ session_start();
 ?>
                             <tr>
                                 <td><?php echo $hash; ?></td>
-                                <td class="col-md-1"><?php echo $row['purchase_order_no']; ?></td>
-                                <td class="col-md-1"><?php echo $row['item_no']; ?></td>
-                                <td class="col-md-1"><?php echo number_format((float)$row['quantity'])." pcs"; ?></td>
-                                <td class="col-md-1"><?php echo number_format((float)$row['balance'])." pcs"; ?></td>
-                                <td><?php echo $row['site_name']; ?></td>
-                                <td class="col-md-1"><?php echo $row['site_address']; ?></td>
-                                <td><?php echo $row['site_contact_name']; ?></td>
-                                <td class="col-md-1"><?php echo $row['date_purchase']; ?></td>
+                                <td class="col-md-1"><strong><?php echo $row['purchase_order_no']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['item_no']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo number_format((float)$row['quantity'])." pcs"; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo number_format((float)$row['balance'])." pcs"; ?></strong></td>
+                                <td><strong><?php echo $row['site_name']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['site_address']; ?></strong></td>
+                                <td><strong><?php echo $row['site_contact_name']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['date_purchase']; ?></strong></td>
                                 <td class="col-md-1">
                                     <form action="bravo_purchase_order.php" method="post">
                                         <button type="button" class="btn btn-warning btn-xs" style="margin-bottom: 5px;" data-toggle='modal' data-target='#purchaseOrderUpdateRow<?php echo $hash; ?>'>Update Info</button>
@@ -763,14 +765,16 @@ session_start();
     //              AND DATE_FORMAT(date_purchase,'%Y-%m-%d') != ''
     //          ORDER BY o.purchase_id DESC LIMIT $start, $limit";
                 
-    $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.office, o.remarks, l.unit, s.site_name, s.site_address, p.site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase
-                FROM purchase_order o, batch_list l, site_contact_person p, site s
+    $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.office, o.remarks, l.unit, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase
+                FROM purchase_order o, purchase_order_contact c, batch_list l, site_contact_person p, site s
                 ".$string." ".$string_date."
                 AND o.site_id = s.site_id
-                AND o.contact_person_id = p.site_contact_person_id
+                AND o.purchase_id = c.purchase_id
+                AND c.site_contact_id = p.site_contact_person_id
                 AND o.item_no = l.item_no 
                 AND o.balance != 0  
                 AND DATE_FORMAT(date_purchase,'%Y-%m-%d') != ''
+                GROUP BY o.purchase_id
                 ORDER BY o.purchase_id DESC LIMIT $start, $limit";
 
     // echo $query;
@@ -783,14 +787,14 @@ session_start();
 ?>
                             <tr>
                                 <td><?php echo $hash; ?></td>
-                                <td class="col-md-1"><?php echo $row['purchase_order_no']; ?></td>
-                                <td class="col-md-1"><?php echo $row['item_no']; ?></td>
-                                <td class="col-md-1"><?php echo number_format((float)$row['quantity'])." pcs"; ?></td>
-                                <td class="col-md-1"><?php echo number_format((float)$row['balance'])." pcs"; ?></td>
-                                <td><?php echo $row['site_name']; ?></td>
-                                <td class="col-md-1"><?php echo $row['site_address']; ?></td>
-                                <td><?php echo $row['site_contact_name']; ?></td>
-                                <td class="col-md-1"><?php echo $row['date_purchase']; ?></td>
+                                <td class="col-md-1"><strong><?php echo $row['purchase_order_no']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['item_no']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo number_format((float)$row['quantity'])." pcs"; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo number_format((float)$row['balance'])." pcs"; ?></strong></td>
+                                <td><strong><?php echo $row['site_name']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['site_address']; ?></strong></td>
+                                <td><strong><?php echo $row['site_contact_name']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['date_purchase']; ?></strong></td>
                                 <td class="col-md-1">
                                     <form action="bravo_purchase_order.php" method="post">
                                         <button type="button" class="btn btn-warning btn-xs" style="margin-bottom: 5px;" data-toggle='modal' data-target='#purchaseOrderUpdateRow<?php echo $hash; ?>'>Update Info</button>

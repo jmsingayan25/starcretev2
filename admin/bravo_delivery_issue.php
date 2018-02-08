@@ -511,11 +511,12 @@ session_start();
     //          ORDER BY purchase_id DESC
     //          LIMIT $start, $limit";
 
-    $query = "SELECT p.purchase_id, p.purchase_unique_id, p.item_no, p.purchase_order_no, s.site_name, s.site_address, p.item_no, p.quantity, p.balance, l.unit, c.site_contact_name, DATE_FORMAT(p.date_purchase,'%m/%d/%y') as date_purchase, p.office, p.remarks
-                FROM purchase_order p, batch_list l, site s, site_contact_person c
+    $query = "SELECT p.purchase_id, p.purchase_unique_id, p.item_no, p.purchase_order_no, s.site_name, s.site_address, p.item_no, p.quantity, p.balance, l.unit, GROUP_CONCAT(DISTINCT c.site_contact_name ORDER BY c.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(p.date_purchase,'%m/%d/%y') as date_purchase, p.office, p.remarks
+                FROM purchase_order p, batch_list l, site s, site_contact_person c, purchase_order_contact poc
                 WHERE p.item_no = l.item_no
+                AND p.purchase_id = poc.purchase_id
+                AND poc.site_contact_id = c.site_contact_person_id
                 AND p.site_id = s.site_id
-                AND p.site_id = c.site_id
                 AND p.balance != 0
                 ".$string." ".$string_date."
                 GROUP BY purchase_id
@@ -722,11 +723,12 @@ session_start();
     //          ORDER BY purchase_id DESC
     //          LIMIT $start, $limit";
 
-    $query = "SELECT p.purchase_id, p.purchase_unique_id, p.item_no, p.purchase_order_no, s.site_name, s.site_address, p.item_no, p.quantity, p.balance, l.unit, c.site_contact_name, DATE_FORMAT(p.date_purchase,'%m/%d/%y') as date_purchase, p.office, p.remarks
-                FROM purchase_order p, batch_list l, site s, site_contact_person c
+    $query = "SELECT p.purchase_id, p.purchase_unique_id, p.item_no, p.purchase_order_no, s.site_name, s.site_address, p.item_no, p.quantity, p.balance, l.unit, GROUP_CONCAT(DISTINCT c.site_contact_name ORDER BY c.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(p.date_purchase,'%m/%d/%y') as date_purchase, p.office, p.remarks
+                FROM purchase_order p, batch_list l, site s, site_contact_person c, purchase_order_contact poc
                 WHERE p.item_no = l.item_no
+                AND p.purchase_id = poc.purchase_id
+                AND poc.site_contact_id = c.site_contact_person_id
                 AND p.site_id = s.site_id
-                AND p.site_id = c.site_id
                 AND p.balance != 0
                 ".$string." ".$string_date."
                 GROUP BY purchase_id

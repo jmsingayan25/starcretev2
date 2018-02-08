@@ -454,8 +454,8 @@
 		$plant = ucfirst($purchase_row['office']);
 
 
-		$delivery_insert = "INSERT INTO delivery(delivery_receipt_no, item_no, quantity, site_id, site_contact_id, gate_pass, po_no_delivery, date_delivery, office, remarks, fk_po_id) 
-							VALUES('$delivery_no','$item_no','$quantity','$site_id','$contact','$gate_pass_no','$po_no','$datetime','$office','On Delivery','$purchase_id')";
+		$delivery_insert = "INSERT INTO delivery(delivery_receipt_no, item_no, quantity, site_id, gate_pass, po_no_delivery, date_delivery, office, remarks, fk_po_id) 
+							VALUES('$delivery_no','$item_no','$quantity','$site_id','$gate_pass_no','$po_no','$datetime','$office','On Delivery','$purchase_id')";
 
 		$history_query = "INSERT INTO history(table_report, transaction_type, detail, history_date, office) 
 		 					VALUES('Delivery','Issued DR No.','Issued DR No. $delivery_no with P.O. No. $po_no and ".$_POST['quantity']." pcs of $item_no and ready to deliver to $site_name','$datetime','$office')";

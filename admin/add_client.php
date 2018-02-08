@@ -352,10 +352,11 @@
 
 		if(mysqli_query($db, $insert_client)){
 
-			$sql = "SELECT MAX(client_id) as client_id FROM client";
-			$result = mysqli_query($db, $sql);
-			$row = mysqli_fetch_assoc($result);
-			$client = $row['client_id'];
+			// $sql = "SELECT MAX(client_id) as client_id FROM client";
+			// $result = mysqli_query($db, $sql);
+			// $row = mysqli_fetch_assoc($result);
+			// $client = $row['client_id'];
+			$client = mysqli_insert_id();
 
 			for($i = 0; $i < count($contact_name); $i++){
 				$array_contact_name[] = $contact_name[$i];

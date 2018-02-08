@@ -138,34 +138,24 @@ session_start();
                         return ( input === 0 ) ? "" : input.toLocaleString( "en-US" );
                     } );
         } );      
-    });
+    });    
 
 	function add_row(){
-        $count = $count + 1;                      
-	 $rowno=$("#item_table tr").length;
-	 $rowno=$rowno+1;
-	 $("#item_table tr:last").after("<tr id='row"+$rowno+"' style='text-align: center;'><td class='col-md-4'><div class='form-group'><select id='item_no' name='item_no[]' class='form-control' required><option value=''>Select</option><?php
-	$sql = "SELECT item_no FROM batch_list ORDER BY item_no ASC";
-	$result = mysqli_query($db, $sql);
-	foreach($result as $row){
-		echo "<option value='" . $row['item_no'] . "'>" . $row['item_no'] . "</option>";
-	}
-?></select></div></td><td class='col-md-4'><div class='form-group'><input type='text' id='quantity' name='quantity[]' class='form-control' required></div></td><td class='col-md-4'><div class='form-group'><input type='button' value='Remove' class='btn btn-primary btn-md' onclick=delete_row('row"+$rowno+"')></div></td></tr>");
+        // $count = $count + 1;                      
+        $rowno=$("#item_table tr").length;
+        $rowno=$rowno+1;
+        $("#item_table tr:last").after("<tr id='row"+$rowno+"' style='text-align: center;'><td class='col-md-4'><div class='form-group'><select id='item_no' name='item_no[]' class='form-control' required><option value=''>Select</option><?php
+        $sql = "SELECT item_no FROM batch_list ORDER BY item_no ASC";
+        $result = mysqli_query($db, $sql);
+        foreach($result as $row){
+        echo "<option value='" . $row['item_no'] . "'>" . $row['item_no'] . "</option>";
+        }
+        ?></select></div></td><td class='col-md-4'><div class='form-group'><input type='text' id='quantity' name='quantity[]' class='form-control' required></div></td><td class='col-md-4'><div class='form-group'><input type='button' value='Remove' class='btn btn-primary btn-md' onclick=delete_row('row"+$rowno+"')></div></td></tr>");
 	}
 
 	function delete_row(rowno){
 	 $('#'+rowno).remove();
 	}
-
-    function add_contact_row(){
-     $rowno=$("#contact_table tr").length;
-     $rowno=$rowno+1;
-     $("#contact_table tr:last").after("<tr id='row_contact_"+$rowno+"'><td class='col-md-8'><select id='contact_name[]' name='contact_name[]' class='form-control' required> <option value=''>Select</option></select></td><td><input type='button' value='Remove' class='btn btn-primary btn-md' onclick=delete_contact_row('row_contact_"+$rowno+"')></td></tr>");
-    }
-
-    function delete_contact_row(rowno){
-     $('#'+rowno).remove();
-    }
 
 	// function displaySiteName(value){
 	// 	var a = document.getElementById("site_name_field");
@@ -192,10 +182,12 @@ session_start();
 
 		var a = document.getElementById("contact_name");
 		var b = document.getElementById("site_id");
+        var c = document.getElementById("site_contact_field");
 
 		if(value == ''){
 			a.options[0].selected="selected";
 			b.options[0].selected="selected";
+            c.style.display = 'none';
 		}
 	}
 
@@ -247,7 +239,7 @@ session_start();
 	        }
 	        xmlhttp.onreadystatechange = function() {
 	            if (this.readyState == 4 && this.status == 200) {
-	                document.getElementById("contact_name[]").innerHTML = this.responseText;
+	                document.getElementById("contact_name").innerHTML = this.responseText;
 	            }
 	        };
 	        xmlhttp.open("GET","ajax/list_contact_names.php?site_id="+str,true);
@@ -465,23 +457,24 @@ while ($row = mysqli_fetch_assoc($result)) {
 								<div class="form-group">
 									<label for="site_id" class="col-md-4 control-label">Site Name / Site Address</label>
 									<div class="col-md-8">
-										<select id="site_id" name="site_id" class="form-control" onchange="contactPerson(this.value);" required>
+										<select id="site_id" name="site_id" class="form-control" onchange="contactPerson(this.value); displayContactNumber(this.value);" required>
 											<option value="">Select</option>
 										</select>
 									</div>
 								</div>
-								<div class="form-group">
+								<div id="site_contact_field" class="form-group" style="display: none;">
 									<label for="contact_name" class="col-md-4 control-label">Contact Person</label>
                                     <table id="contact_table">
                                         <tr id="row_contact_1">
                                             <td class="col-md-8">
-                                                <select id="contact_name[]" name="contact_name[]" class="form-control" required>
+                                                <div id="contact_name"></div>
+                                               <!--  <select id="contact_name" name="contact_name[]" class="form-control" required>
                                                     <option value="">Select</option>
-                                                </select>
+                                                </select> -->
                                             </td>
-                                            <td>
+                                          <!--   <td>
                                                 <input type="button" onclick="add_contact_row();" class='btn btn-primary btn-md' autocomplete="off" value="Add Contact">
-                                            </td>
+                                            </td> -->
                                         </tr>
                                     </table>
 									<!-- <div class="col-md-8">
@@ -500,7 +493,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 									<div class="col-md-offset-8 col-md-4">
 										<input type="submit" name="submit" id="submit" value="Submit" class="btn btn-primary">
 										<!-- <a href="delivery_transaction.php" class="btn btn-warning">Cancel</a> -->
-										<input type="reset" name="reset" id="reset" value="Reset" class="btn btn-warning">
+										<input type="reset" name="reset" id="reset" value="Reset" onclick="window.location.reload(true);" class="btn btn-warning">
 									</div>
 								</div>
 							</div>
@@ -600,21 +593,36 @@ while ($row = mysqli_fetch_assoc($result)) {
 		$quantity = str_replace( ',', '', $_POST['quantity']);
 		$datetime = date("Y/m/d H:i:s");
 		
-		$contact_person = mysqli_real_escape_string($db, $_POST['contact_name']);
+		$contact_person = $_POST['contact_name'];
 		// $contact_no = mysqli_real_escape_string($db, $_POST['contact_number']);
 		$plant = $_POST['plant'];
+
 
 		$count = 0;
 		for($i = 0; $i < count($item); $i++){
 			if($item[$i] != "" && $quantity[$i] != ""){
-				$insert_purchase_order = "INSERT INTO purchase_order(purchase_unique_id, purchase_order_no, site_id, item_no, quantity, balance, contact_person_id, date_purchase, office, remarks) VALUES('$purchase_unique_id','$po_no','$site_id','$item[$i]','$quantity[$i]','$quantity[$i]','$contact_person','$datetime','$plant','Pending')";
+				$insert_purchase_order = "INSERT INTO purchase_order(purchase_unique_id, purchase_order_no, site_id, item_no, quantity, balance, date_purchase, office, remarks) VALUES('$purchase_unique_id','$po_no','$site_id','$item[$i]','$quantity[$i]','$quantity[$i]','$datetime','$plant','Pending')";
 
 				$history_query = "INSERT INTO history(table_report, transaction_type, item_no, detail, history_date, office) VALUES('Purchase Order','Issued P.O. No.','$item[$i]','$client_name ordered ".number_format($quantity[$i])." pcs of $item[$i] with P.O. No. $po_no from ".ucfirst($plant)." to be delivered to $site_name','$datetime','$plant')";
 
 				// echo $insert_purchase_order."<br>";
 				// echo $history_query."<br>";
 
+                // if(mysqli_query($db, $insert_purchase_order)){
 				if(mysqli_query($db, $insert_purchase_order) && mysqli_query($db, $history_query)){
+
+                    $sql = "SELECT MAX(purchase_id) as purchase_id FROM purchase_order";
+                    $result = mysqli_query($db, $sql);
+                    $row = mysqli_fetch_assoc($result);
+                    $latest_po_id = $row['purchase_id'];
+
+                    for ($j=0; $j < count($contact_person); $j++) { 
+                        
+                        $insert_contact_po = "INSERT INTO purchase_order_contact(purchase_id, site_contact_id)
+                                                VALUES('$latest_po_id','$contact_person[$j]')";
+                        // echo $insert_contact_po."<br>";
+                        mysqli_query($db, $insert_contact_po);
+                    }
 					$count++;
 				}
 			}
