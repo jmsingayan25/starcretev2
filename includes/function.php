@@ -5,10 +5,12 @@
 /* List of miscellaneous functions */
 	// function getSiteContactInfo($db, $)
 
-	function getPurchaseOrderDetails($db, $unique_id){
+
+	function getPurchaseOrderDetails($db, $fk_po_id, $po_no_delivery){
 
 		$sql = "SELECT * FROM purchase_order
-				WHERE purchase_unique_id = '$unique_id'";
+				WHERE purchase_order_no = '$po_no_delivery'
+				AND purchase_id = '$fk_po_id'";
 
 		$result = mysqli_query($db, $sql);
 		$row = mysqli_fetch_assoc($result);
@@ -391,11 +393,11 @@
       	return $row['total'];
 	}
 
-	function getDeliveryBalance($db, $unique_id){
+	function getDeliveryBalance($db, $po_no_delivery){
 
 		$sql = "SELECT SUM(balance) as balance 
 				FROM purchase_order 
-				WHERE purchase_unique_id = '$unique_id'";
+				WHERE purchase_order_no = '$po_no_delivery'";
 			
 		$result = mysqli_query($db, $sql);
       	$row = mysqli_fetch_assoc($result);

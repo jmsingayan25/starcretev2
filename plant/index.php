@@ -8,7 +8,7 @@
     include("../includes/config.php");
     include("../includes/function.php");
 
-    if(!isset($_SESSION['login_user']) && $_SESSION['login_office'] == 'head') {
+    if(!isset($_SESSION['login_user']) && !isset($_SESSION['login_office']) || $_SESSION['login_office'] == 'head') {
         header("location: ../login.php");
     }
 
@@ -16,12 +16,22 @@
         $_GET['page'] = 0;
     }
 
-    if(!isset($_POST['start_date'])){
-        $_POST['start_date'] = '';
+    if(!isset($_GET['view_count'])){
+        $limit = 25;
+    }else{
+        $limit = $_GET['view_count'];
     }
 
-    if(!isset($_POST['end_date'])){
-        $_POST['end_date'] = '';
+    if(!isset($_GET['search'])){
+        $_GET['search'] = '';
+    }
+
+    if(!isset($_GET['start_date'])){
+        $_GET['start_date'] = '';
+    }
+
+    if(!isset($_GET['end_date'])){
+        $_GET['end_date'] = '';
     }
 
     $user_query = $db->prepare("SELECT * FROM users WHERE username = ?");
@@ -33,7 +43,7 @@
     $office = $user['office'];
     $position = $user['position'];
 
-    $limit = 20;
+    // $limit = 20;
 ?>
 <html lang="en">
 <head>
@@ -206,10 +216,14 @@
 </script>
 <style>
 .table_page{
-    margin: auto;
-    margin-top: -30px;
-    width: 50%;
+    /*margin: auto;*/
+    margin-top: -40px;
+    /*width: 100%;*/
     text-align: center;
+}
+
+.table_row_count{
+    margin-top: -15px;
 }
 
 .filterable .panel-heading .pull-right {
@@ -239,7 +253,9 @@
      text-align: left;
      font-weight: bold;
 }
-
+.page_links a{
+    color: inherit;
+}
 </style>
 </head>
 
@@ -264,43 +280,6 @@
             <div class="top-nav notification-row">                
                 <!-- notificatoin dropdown start-->
                 <ul class="nav pull-right top-menu">
-
-                    <!-- alert notification start-->
-                    <li id="alert_notificatoin_bar" class="dropdown">
-                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <i class="icon-bell-l"></i>
-                            <span class="badge bg-important">7</span>
-                        </a>
-                        <ul class="dropdown-menu extended notification">
-                            <div class="notify-arrow notify-arrow-blue"></div>
-                            <li>
-                                <p class="blue">You have 4 new notifications</p>
-                            </li>
-                            <li>
-                                <a href="#"><span class="label label-primary"><i class="icon_profile"></i></span>Friend Request<span class="small italic pull-right">5 mins</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                <span class="label label-warning"><i class="icon_pin"></i></span>John location.<span class="small italic pull-right">50 mins</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                <span class="label label-danger"><i class="icon_book_alt"></i></span>Project 3 Completed.<span class="small italic pull-right">1 hr</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                <span class="label label-success"><i class="icon_like"></i></span>Mick appreciated your work.<span class="small italic pull-right"> Today</span>
-                                </a>
-                            </li>                            
-                            <li>
-                                <a href="#">See all notifications</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <!-- alert notification end-->
                     <!-- user login dropdown start-->
                     <li class="dropdown">
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
@@ -331,7 +310,7 @@
             <ul class="sidebar-menu">                
                 <li class="active">
                     <a class="" href="index.php">
-                        <i class="icon_house_alt"></i>
+                        <i class="icon_house"></i>
                         <span>History</span>
                     </a>
                 </li>
@@ -359,63 +338,6 @@
                         <li><a class="" href="plant_delivery_backloaded.php">Backloaded Order</a></li>
                     </ul>
                 </li>  
-                <!-- <li class="">
-                    <a class="" href="plant_delivery_order.php">
-                        <i class="fa fa-list-alt"></i>
-                        <span>Delivery Order</span>
-                    </a>
-                </li> -->
-<!--                 <li class="sub-menu">                       
-                    <a class="" href="plant_purchase_order.php">Purchase Order</a>
-                </li>   --> 
-                <!-- <li class="sub-menu">
-                <a href="javascript:;" class="">
-                <i class="icon_document_alt"></i>
-                <span>Forms</span>
-                <span class="menu-arrow arrow_carrot-right"></span>
-                </a>
-                <ul class="sub">
-                <li><a class="" href="form_component.html">Form Elements</a></li>                          
-                <li><a class="" href="form_validation.html">Form Validation</a></li>
-                </ul>
-                </li>       
-                <li class="sub-menu">
-                <a href="javascript:;" class="">
-                <i class="icon_desktop"></i>
-                <span>UI Fitures</span>
-                <span class="menu-arrow arrow_carrot-right"></span>
-                </a>
-                <ul class="sub">
-                <li><a class="" href="general.html">Elements</a></li>
-                <li><a class="" href="buttons.html">Buttons</a></li>
-                <li><a class="" href="grids.html">Grids</a></li>
-                </ul>
-                </li>                         
-                <li class="sub-menu">
-                <a href="javascript:;" class="">
-                <i class="icon_table"></i>
-                <span>Tables</span>
-                <span class="menu-arrow arrow_carrot-right"></span>
-                </a>
-                <ul class="sub">
-                <li><a class="" href="basic_table.html">Basic Table</a></li>
-                </ul>
-                </li>
-
-                <li class="sub-menu">
-                <a href="javascript:;" class="">
-                <i class="icon_documents_alt"></i>
-                <span>Pages</span>
-                <span class="menu-arrow arrow_carrot-right"></span>
-                </a>
-                <ul class="sub">                          
-                <li><a class="" href="profile.html">Profile</a></li>
-                <li><a class="" href="login.html"><span>Login Page</span></a></li>
-                <li><a class="" href="blank.html">Blank Page</a></li>
-                <li><a class="" href="404.html">404 Error</a></li>
-                </ul>
-                </li> -->
-
             </ul>
             <!-- sidebar menu end-->
         </div>
@@ -427,11 +349,11 @@
         <section class="wrapper">            
             <!--overview start-->
             <div class="row">
-                <div class="col-lg-12">
-                    <h3 class="page-header"><i class="fa fa-laptop"></i> History</h3>
+                <div class="col-lg-12 page_links">
+                    <h3 class="page-header"><i class="fa fa-home"></i><a href="index.php">History</a></h3>
                     <ol class="breadcrumb">
-                        <li><i class="fa fa-home"></i><a href="index.php">Home</a></li>
-                        <li><i class="fa fa-laptop"></i>History</li>						  	
+                        <!-- <li><i class="fa fa-home"></i><a href="index.php">Home</a></li> -->
+                        <li><i class="fa fa-home"></i><a href="index.php" style="color: blue;">History</a></li>						  	
                     </ol>
                 </div>
             </div>
@@ -439,54 +361,89 @@
             <div class="row">
                 <div class="col-md-12">
                     <section class="panel">
-                        <form action="index.php" method="post" class="form-inline">
+                        <form action="index.php" method="get" class="form-inline">
                              <header class="panel-heading">
                                 <div class="row" style="margin-bottom: 5px;">
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <label for="start_date">Start Date:</label><input type="date" name="start_date" class="form-control" value="<?php if(isset($_POST['start_date'])) { echo htmlentities ($_POST['start_date']); }?>">
+                                            <label for="start_date">Start Date:</label><input type="date" name="start_date" class="form-control" value="<?php if(isset($_GET['start_date'])) { echo htmlentities ($_GET['start_date']); }?>">
                                         </div>
                                     </div>
                                     <div class="col-md-2">
                                         <div class="form-group">
-                                            <label for="end_date">End Date:</label><input type="date" name="end_date" class="form-control" value="<?php if(isset($_POST['end_date'])) { echo htmlentities ($_POST['end_date']); }?>">
+                                            <label for="end_date">End Date:</label><input type="date" name="end_date" class="form-control" value="<?php if(isset($_GET['end_date'])) { echo htmlentities ($_GET['end_date']); }?>">
                                         </div>
                                     </div>  
-                                    <div class="col-md-2" style="margin-top: 39px;">
+                                    <div class="input-group col-md-5" style="margin: 38px 0px 0px 0px;">
+                                        <input type="text" name="search" class="form-control" placeholder="Search..." value="<?php if(isset($_GET['search'])) { echo htmlentities ($_GET['search']); }?>">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-info" type="submit" name="search_table">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
+                                    </div>  
+                                    <!-- <div class="col-md-2" style="margin-top: 39px;">
                                         <input type="submit" name="search_table" id="search_table" value="Search" class="btn btn-primary">
-                                    </div>
+                                    </div> -->
+                                </div>
+                                <div class="row">
+                                    <div class="input-group col-md-5" style="margin: 5px 0px 0px 0px;">
+                                        <div class="form-group">
+                                            <label for="view_count" class="col-md-8">Number of rows:</label>
+                                            <div class="col-md-1">
+                                                <select id="view_count" name="view_count" onchange="this.form.submit()">
+                                                    <option value="25" <?php if(isset($_GET['view_count']) && $_GET['view_count'] == "25") echo 'selected="selected"';?>>25</option>
+                                                    <option value="50"<?php if(isset($_GET['view_count']) && $_GET['view_count'] == "50") echo 'selected="selected"';?>>50</option>
+                                                    <option value="75"<?php if(isset($_GET['view_count']) && $_GET['view_count'] == "75") echo 'selected="selected"';?>>75</option>
+                                                    <option value="100"<?php if(isset($_GET['view_count']) && $_GET['view_count'] == "100") echo 'selected="selected"';?>>100</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>  
                                 </div>
                             </header>
                         </form>
                         <div class="table-responsive filterable">
 <?php
-    if(isset($_POST['search_table'])){
+    if(isset($_GET['search_table'])){
 
         $search_plant = $office;
 
-        if($_POST['end_date'] == ''){
+        if($_GET['search'] == ''){
+            $search_word = "";
+        }else{
+            $search_word = $_GET['search'];
+        }
+
+        if($_GET['search'] != ''){
+            $string_ext = " AND (transaction_type LIKE '%".$search_word."%' OR detail LIKE '%".$search_word."%') ";
+        }else{
+            $string_ext = "";
+        }
+
+        if($_GET['end_date'] == ''){
             $end_date = '';
         }else{
-            $end_date = $_POST['end_date'];
+            $end_date = $_GET['end_date'];
         }
 
-        if($_POST['start_date'] == ''){
+        if($_GET['start_date'] == ''){
             $start_date = '';
         }else{
-            $start_date = $_POST['start_date'];
+            $start_date = $_GET['start_date'];
         }
 
-        if($_POST['start_date'] == '' && $_POST['end_date'] == ''){
+        if($_GET['start_date'] == '' && $_GET['end_date'] == ''){
             $string_date = "";
-        }else if($_POST['start_date'] == '' && $_POST['end_date'] != ''){
+        }else if($_GET['start_date'] == '' && $_GET['end_date'] != ''){
             $string_date = "AND DATE_FORMAT(history_date,'%Y-%m-%d') <= '$end_date'";
-        }else if($_POST['start_date'] != '' && $_POST['end_date'] == ''){
+        }else if($_GET['start_date'] != '' && $_GET['end_date'] == ''){
             $string_date = "AND DATE_FORMAT(history_date,'%Y-%m-%d') >= '$start_date'";     
         }else{
             $string_date = "AND DATE_FORMAT(history_date,'%Y-%m-%d') BETWEEN '$start_date' AND '$end_date'";
         }
 ?>
-                            <table class="table" id="myTable">
+                            <table class="table table-striped table-bordered" id="myTable">
                                 <thead>
                                     <tr class="filterable">
                                         <th colspan="2"></th>
@@ -496,8 +453,8 @@
                                     </tr>
                                     <tr class="filters">
                                         <th class="col-md-1">
-                                            <!-- <input type="text" class="form-control" placeholder="Status" disabled></th> -->
-                                            <select id="select_status" name="select_status" class="form-control" onchange="filterTable();">
+                                            <input type="text" class="form-control" placeholder="Transaction" disabled></th>
+                                           <!--  <select id="select_status" name="select_status" class="form-control" onchange="filterTable();">
                                                 <option value="">All Status</option>
 <?php
     $sql_type = "SELECT DISTINCT transaction_type
@@ -511,8 +468,8 @@
                                 echo "<option value='".$row['transaction_type']."'>".$row['transaction_type']."</option>";
     }
 ?>
-                                            </select>
-                                        <th class="col-md-5"><input type="text" class="form-control" placeholder="Transaction" disabled></th>
+                                            </select> -->
+                                        <th class="col-md-5"><input type="text" class="form-control" placeholder="Description" disabled></th>
                                         <th class="col-md-1">Date</th>
                                       </tr>
                                 </thead>
@@ -524,7 +481,7 @@
     }else{
         $string = " WHERE office = '$office'";
     }
-    $sql = "SELECT * FROM history".$string." ".$string_date;
+    $sql = "SELECT * FROM history".$string." ".$string_date." ".$string_ext;
 
     $result = mysqli_query($db, $sql); 
     $total = mysqli_num_rows($result);
@@ -552,7 +509,7 @@
     if($lastpage > 1){ 
         $pagination .= "<div class='pagination1'> <ul class='pagination'>";
         if ($page > $counter+1) {
-            $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$prev&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\"><<</a></li>"; 
+            $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$prev&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">Previous</a></li>"; 
         }
 
         if ($lastpage < 7 + ($adjacents * 2)) { 
@@ -560,7 +517,7 @@
                 if ($counter == $page)
                 $pagination.= "<li class='page-item active'><a class='page-link' href='#'>$counter</a></li>";
                 else
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$counter</a></li>"; 
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$counter</a></li>"; 
             }
         }
         elseif($lastpage > 5 + ($adjacents * 2)){ //enough pages to hide some
@@ -570,56 +527,57 @@
                     if ($counter == $page)
                     $pagination.= "<li class='page-item active'><a class='page-link' href='#'>$counter</a></li>";
                     else
-                    $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$counter</a></li>"; 
+                    $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$counter</a></li>"; 
                 }
                 $pagination.= "<li class='page-item'><a class='page-link' href='#'>...</a></li>";
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lpm1&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$lpm1</a></li>";
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lastpage&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$lastpage</a></li>"; 
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lpm1&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$lpm1</a></li>";
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lastpage&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$lastpage</a></li>"; 
             }
             //in middle; hide some front and some back
             elseif($lastpage - ($adjacents * 2) > $page && $page > ($adjacents * 2)){
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=1&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">1</a></li>";
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=2&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">2</a></li>";
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=1&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">1</a></li>";
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=2&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">2</a></li>";
                 $pagination.= "<li class='page-item'><a class='page-link' href='#'>...</a></li>";
                 for ($counter = $page - $adjacents; $counter <= $page + $adjacents; $counter++){
                     if ($counter == $page)
                     $pagination.= "<li class='page-item active'><a class='page-link' href='#'>$counter</a></li>";
                     else
-                    $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$counter</a></li>"; 
+                    $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$counter</a></li>"; 
                 }
                 $pagination.= "<li class='page-item'><a class='page-link' href='#'>...</a></li>";
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lpm1&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$lpm1</a></li>";
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lastpage&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$lastpage</a></li>"; 
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lpm1&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$lpm1</a></li>";
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lastpage&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$lastpage</a></li>"; 
             }
             //close to end; only hide early pages
             else{
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=1&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">1</a></li>";
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=2&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">2</a></li>";
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=1&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">1</a></li>";
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=2&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">2</a></li>";
                 $pagination.= "<li class='page-item'><a class='page-link' href='#'>...</a></li>";
                 for ($counter = $lastpage - (2 + ($adjacents * 2)); $counter <= $lastpage; $counter++){
                     if ($counter == $page)
                     $pagination.= "<li class='page-item active'><a class='page-link' href='#'>$counter</a></li>";
                     else
-                    $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$counter</a></li>"; 
+                    $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$counter</a></li>"; 
                 }
             }
         }
 
         //next button
         if ($page < $counter - 1) 
-            $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$next&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">>></a></li>";
+            $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$next&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">Next</a></li>";
         else
             $pagination.= "";
         $pagination.= "</ul></div>\n"; 
     }
 
     $sql1 = "SELECT table_report, transaction_type, detail, office, DATE_FORMAT(history_date,'%m/%d/%y')  as history_date1 
-            FROM history ".$string." ".$string_date." 
+            FROM history ".$string." ".$string_date." ".$string_ext."
             ORDER BY history_date DESC limit $start, $limit";
 
     // echo $sql1;
     $result = mysqli_query($db,$sql1);
     if(mysqli_num_rows($result) > 0){
+        $hash = 1;
       while($row = mysqli_fetch_array($result)){
 ?>
                         <tr>
@@ -628,6 +586,7 @@
                             <td class="col-md-1"><strong><?php echo $row['history_date1']; ?></strong></td>
                         </tr>
 <?php
+        $hash++;
       }
     }else{
 ?>
@@ -650,29 +609,41 @@
 
         $search_plant = $office;
 
-        if($_POST['end_date'] == ''){
+        if($_GET['search'] == ''){
+            $search_word = "";
+        }else{
+            $search_word = $_GET['search'];
+        }
+
+        if($_GET['search'] != ''){
+            $string_ext = " AND (transaction_type LIKE '%".$search_word."%' OR detail LIKE '%".$search_word."%') ";
+        }else{
+            $string_ext = "";
+        }
+
+        if($_GET['end_date'] == ''){
             $end_date = '';
         }else{
-            $end_date = $_POST['end_date'];
+            $end_date = $_GET['end_date'];
         }
 
-        if($_POST['start_date'] == ''){
+        if($_GET['start_date'] == ''){
             $start_date = '';
         }else{
-            $start_date = $_POST['start_date'];
+            $start_date = $_GET['start_date'];
         }
 
-        if($_POST['start_date'] == '' && $_POST['end_date'] == ''){
+        if($_GET['start_date'] == '' && $_GET['end_date'] == ''){
             $string_date = "";
-        }else if($_POST['start_date'] == '' && $_POST['end_date'] != ''){
+        }else if($_GET['start_date'] == '' && $_GET['end_date'] != ''){
             $string_date = "AND DATE_FORMAT(history_date,'%Y-%m-%d') <= '$end_date'";
-        }else if($_POST['start_date'] != '' && $_POST['end_date'] == ''){
+        }else if($_GET['start_date'] != '' && $_GET['end_date'] == ''){
             $string_date = "AND DATE_FORMAT(history_date,'%Y-%m-%d') >= '$start_date'";     
         }else{
             $string_date = "AND DATE_FORMAT(history_date,'%Y-%m-%d') BETWEEN '$start_date' AND '$end_date'";
         }
 ?>
-                <table class="table" id="myTable">
+                <table class="table table-striped table-bordered" id="myTable">
                     <thead>
                         <tr class="filterable">
                             <th colspan="2"></th>
@@ -682,8 +653,8 @@
                         </tr>
                         <tr class="filters">
                             <th class="col-md-1">
-                                <!-- <input type="text" class="form-control" placeholder="Status" disabled></th> -->
-                                <select id="select_status" name="select_status" class="form-control" onchange="filterTable();">
+                                <input type="text" class="form-control" placeholder="Transaction" disabled></th>
+                                <!-- <select id="select_status" name="select_status" class="form-control" onchange="filterTable();">
                                     <option value="">All Status</option>
 <?php
     $sql_type = "SELECT DISTINCT transaction_type
@@ -697,8 +668,8 @@
                                 echo "<option value='".$row['transaction_type']."'>".$row['transaction_type']."</option>";
     }
 ?>
-                                </select>
-                            <th class="col-md-5"><input type="text" class="form-control" placeholder="Transaction" disabled></th>
+                                </select> -->
+                            <th class="col-md-5"><input type="text" class="form-control" placeholder="Description" disabled></th>
                             <th class="col-md-1">Date</th>
                           </tr>
                     </thead>
@@ -707,7 +678,7 @@
 
     $string = " WHERE office = '$search_plant'";
 
-    $sql = "SELECT * FROM history".$string." ".$string_date;
+    $sql = "SELECT * FROM history".$string." ".$string_date." ".$string_ext;
     $result = mysqli_query($db, $sql); 
     $total = mysqli_num_rows($result);
 
@@ -734,7 +705,7 @@
     if($lastpage > 1){ 
         $pagination .= "<div class='pagination1'> <ul class='pagination'>";
         if ($page > $counter+1) {
-            $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$prev&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\"><<</a></li>"; 
+            $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$prev&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">Previous</a></li>"; 
         }
 
         if ($lastpage < 7 + ($adjacents * 2)) { 
@@ -742,7 +713,7 @@
                 if ($counter == $page)
                 $pagination.= "<li class='page-item active'><a class='page-link' href='#'>$counter</a></li>";
                 else
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$counter</a></li>"; 
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$counter</a></li>"; 
             }
         }
         elseif($lastpage > 5 + ($adjacents * 2)){ //enough pages to hide some
@@ -752,55 +723,56 @@
                     if ($counter == $page)
                     $pagination.= "<li class='page-item active'><a class='page-link' href='#'>$counter</a></li>";
                     else
-                    $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$counter</a></li>"; 
+                    $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$counter</a></li>"; 
                 }
                 $pagination.= "<li class='page-item'><a class='page-link' href='#'>...</a></li>";
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lpm1&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$lpm1</a></li>";
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lastpage&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$lastpage</a></li>"; 
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lpm1&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$lpm1</a></li>";
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lastpage&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$lastpage</a></li>"; 
             }
             //in middle; hide some front and some back
             elseif($lastpage - ($adjacents * 2) > $page && $page > ($adjacents * 2)){
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=1&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">1</a></li>";
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=2&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">2</a></li>";
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=1&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">1</a></li>";
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=2&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">2</a></li>";
                 $pagination.= "<li class='page-item'><a class='page-link' href='#'>...</a></li>";
                 for ($counter = $page - $adjacents; $counter <= $page + $adjacents; $counter++){
                     if ($counter == $page)
                     $pagination.= "<li class='page-item active'><a class='page-link' href='#'>$counter</a></li>";
                     else
-                    $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$counter</a></li>"; 
+                    $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$counter</a></li>"; 
                 }
                 $pagination.= "<li class='page-item'><a class='page-link' href='#'>...</a></li>";
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lpm1&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$lpm1</a></li>";
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lastpage&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$lastpage</a></li>"; 
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lpm1&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$lpm1</a></li>";
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$lastpage&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$lastpage</a></li>"; 
             }
             //close to end; only hide early pages
             else{
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=1&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">1</a></li>";
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=2&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">2</a></li>";
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=1&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">1</a></li>";
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=2&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">2</a></li>";
                 $pagination.= "<li class='page-item'><a class='page-link' href='#'>...</a></li>";
                 for ($counter = $lastpage - (2 + ($adjacents * 2)); $counter <= $lastpage; $counter++){
                     if ($counter == $page)
                     $pagination.= "<li class='page-item active'><a class='page-link' href='#'>$counter</a></li>";
                     else
-                    $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">$counter</a></li>"; 
+                    $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$counter&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">$counter</a></li>"; 
                 }
             }
         }
 
         //next button
         if ($page < $counter - 1) 
-            $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$next&radioOffice=$search_plant&start_date=$start_date&end_date=$end_date\">>></a></li>";
+            $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$next&start_date=$start_date&end_date=$end_date&search=$search_word&view_count=$limit\">Next</a></li>";
         else
             $pagination.= "";
         $pagination.= "</ul></div>\n"; 
     }
 
     $sql1 = "SELECT table_report, transaction_type, detail, office, DATE_FORMAT(history_date,'%m/%d/%y')  as history_date1 
-            FROM history ".$string." ".$string_date."
+            FROM history ".$string." ".$string_date." ".$string_ext."
             ORDER BY history_date DESC limit $start, $limit";
     // echo $sql1;
     $result = mysqli_query($db,$sql1);
     if(mysqli_num_rows($result) > 0){
+        $hash = 1;
       while($row = mysqli_fetch_array($result)){
 
 ?>
@@ -810,6 +782,7 @@
                             <td class="col-md-1"><strong><?php echo $row['history_date1']; ?></strong></td>
                         </tr>
 <?php
+        $hash++;
       }
     }else{
 ?>
@@ -831,14 +804,23 @@
                 </div>
             </div><!--/.row-->       
             <div class="row">
-                <div class="col-md-12">
-                    <div class="table_page">
+                    <div class="col-md-4">
+                        <div class="table_row_count">
+<?php
+                        if(isset($hash)){
+                            echo "Showing " . ($start+1)  . " to " . ($start + $hash - 1) . " of " . $total . " entries"; 
+                        }
+?>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="table_page">
 <?php
                         echo $pagination; 
 ?>      
+                        </div>
                     </div>
-                </div>
-            </div> 
+                </div> 
         </section>
         <div class="text-right">
             <div class="credits">

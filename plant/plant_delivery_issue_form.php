@@ -8,7 +8,7 @@
     include("../includes/config.php");
     include("../includes/function.php");
 
-    if(!isset($_SESSION['login_user']) && $_SESSION['login_office'] == 'head') {
+    if(!isset($_SESSION['login_user']) && !isset($_SESSION['login_office']) || $_SESSION['login_office'] == 'head') {
         header("location: ../login.php");
     }
 
@@ -179,6 +179,11 @@
 	}
 
 </script>
+<style>
+.page_links a{
+    color: inherit;
+}
+</style>
 </head>
 <body onload="compareValues('');">
 <!-- container section start -->
@@ -201,43 +206,6 @@
             <div class="top-nav notification-row">                
                 <!-- notificatoin dropdown start-->
                 <ul class="nav pull-right top-menu">
-
-                    <!-- alert notification start-->
-                    <li id="alert_notificatoin_bar" class="dropdown">
-                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <i class="icon-bell-l"></i>
-                            <span class="badge bg-important">7</span>
-                        </a>
-                        <ul class="dropdown-menu extended notification">
-                            <div class="notify-arrow notify-arrow-blue"></div>
-                            <li>
-                                <p class="blue">You have 4 new notifications</p>
-                            </li>
-                            <li>
-                                <a href="#"><span class="label label-primary"><i class="icon_profile"></i></span>Friend Request<span class="small italic pull-right">5 mins</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                <span class="label label-warning"><i class="icon_pin"></i></span>John location.<span class="small italic pull-right">50 mins</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                <span class="label label-danger"><i class="icon_book_alt"></i></span>Project 3 Completed.<span class="small italic pull-right">1 hr</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                <span class="label label-success"><i class="icon_like"></i></span>Mick appreciated your work.<span class="small italic pull-right"> Today</span>
-                                </a>
-                            </li>                            
-                            <li>
-                                <a href="#">See all notifications</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <!-- alert notification end-->
                     <!-- user login dropdown start-->
                     <li class="dropdown">
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
@@ -266,7 +234,7 @@
 	            <ul class="sidebar-menu">                
 	                <li class="">
 	                    <a class="" href="index.php">
-	                        <i class="icon_house_alt"></i>
+	                        <i class="icon_house"></i>
 	                        <span>History</span>
 	                    </a>
 	                </li>
@@ -294,56 +262,6 @@
 	                        <li><a class="" href="plant_delivery_backloaded.php">Backloaded Order</a></li>
 	                    </ul>
 	                </li>  
-	<!--                 <li class="sub-menu">                       
-	                    <a class="" href="plant_purchase_order.php">Purchase Order</a>
-	                </li>   --> 
-	                <!-- <li class="sub-menu">
-	                <a href="javascript:;" class="">
-	                <i class="icon_document_alt"></i>
-	                <span>Forms</span>
-	                <span class="menu-arrow arrow_carrot-right"></span>
-	                </a>
-	                <ul class="sub">
-	                <li><a class="" href="form_component.html">Form Elements</a></li>                          
-	                <li><a class="" href="form_validation.html">Form Validation</a></li>
-	                </ul>
-	                </li>       
-	                <li class="sub-menu">
-	                <a href="javascript:;" class="">
-	                <i class="icon_desktop"></i>
-	                <span>UI Fitures</span>
-	                <span class="menu-arrow arrow_carrot-right"></span>
-	                </a>
-	                <ul class="sub">
-	                <li><a class="" href="general.html">Elements</a></li>
-	                <li><a class="" href="buttons.html">Buttons</a></li>
-	                <li><a class="" href="grids.html">Grids</a></li>
-	                </ul>
-	                </li>                         
-	                <li class="sub-menu">
-	                <a href="javascript:;" class="">
-	                <i class="icon_table"></i>
-	                <span>Tables</span>
-	                <span class="menu-arrow arrow_carrot-right"></span>
-	                </a>
-	                <ul class="sub">
-	                <li><a class="" href="basic_table.html">Basic Table</a></li>
-	                </ul>
-	                </li>
-
-	                <li class="sub-menu">
-	                <a href="javascript:;" class="">
-	                <i class="icon_documents_alt"></i>
-	                <span>Pages</span>
-	                <span class="menu-arrow arrow_carrot-right"></span>
-	                </a>
-	                <ul class="sub">                          
-	                <li><a class="" href="profile.html">Profile</a></li>
-	                <li><a class="" href="login.html"><span>Login Page</span></a></li>
-	                <li><a class="" href="blank.html">Blank Page</a></li>
-	                <li><a class="" href="404.html">404 Error</a></li>
-	                </ul>
-	                </li> -->
 
 	            </ul>
 	            <!-- sidebar menu end-->
@@ -356,12 +274,12 @@
 	        <section class="wrapper">            
 	            <!--overview start-->
 	            <div class="row">
-	                <div class="col-md-12">
-	                    <h3 class="page-header"><i class="fa fa-laptop"></i> Issue Form</h3>
+	                <div class="col-md-12 page_links">
+	                    <h3 class="page-header"><i class="fa fa-file"></i><a href="plant_delivery_issue_form.php">Issue Form</a></h3>
 	                    <ol class="breadcrumb">
-	                        <li><i class="fa fa-home"></i><a href="plant_delivery_order.php">Delivery Order</a></li>
-	                        <li><i class="fa fa-laptop"></i><a href="plant_delivery_issue.php">No DR. No.</a></li>	
-	                        <li><i class="fa fa-laptop"></i>Issue Form</li>						  	
+	                        <li><i class="fa fa-building"></i>Delivery Order</li>
+	                        <li><i class="fa fa-exclamation-circle"></i><a href="plant_delivery_issue.php">No DR. No.</a></li>	
+	                        <li><i class="fa fa-file"></i><a href="plant_delivery_issue_form.php" style="color: blue;">Issue Form</a></li>						  	
 	                    </ol>
 	                </div>
 	            </div>
