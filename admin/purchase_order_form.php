@@ -8,7 +8,7 @@ session_start();
     include("../includes/config.php");
     include("../includes/function.php");
 
-    if(!isset($_SESSION['login_user']) || $_SESSION['login_office'] != 'head') {
+    if(!isset($_SESSION['login_user']) && !isset($_SESSION['login_office']) || $_SESSION['login_office'] != 'head') {
         header("location: ../login.php");
     }
 
@@ -140,6 +140,17 @@ session_start();
         } );      
     });    
 
+    $(document).ready(function() {
+        $("#client").change(function() {
+            // alert($(this).val());
+            var b = document.getElementById("site_id");
+            var c = document.getElementById("site_contact_field");
+
+            b.options[0].selected="selected";
+            c.style.display = 'none';
+        });
+    });
+
 	function add_row(){
         // $count = $count + 1;                      
         $rowno=$("#item_table tr").length;
@@ -150,7 +161,7 @@ session_start();
         foreach($result as $row){
         echo "<option value='" . $row['item_no'] . "'>" . $row['item_no'] . "</option>";
         }
-        ?></select></div></td><td class='col-md-4'><div class='form-group'><input type='text' id='quantity' name='quantity[]' class='form-control' required></div></td><td class='col-md-4'><div class='form-group'><input type='button' value='Remove' class='btn btn-primary btn-md' onclick=delete_row('row"+$rowno+"')></div></td></tr>");
+        ?></select></div></td><td class='col-md-4'><div class='form-group'><input type='text' id='quantity' name='quantity[]' class='form-control' placeholder='Quantity' required></div></td><td class='col-md-4'><div class='form-group'><input type='button' value='Remove' class='btn btn-primary btn-md' onclick=delete_row('row"+$rowno+"')></div></td></tr>");
 	}
 
 	function delete_row(rowno){
@@ -180,12 +191,12 @@ session_start();
 
 	function resetList(value){
 
-		var a = document.getElementById("contact_name");
+		// var a = document.getElementById("contact_name");
 		var b = document.getElementById("site_id");
         var c = document.getElementById("site_contact_field");
 
 		if(value == ''){
-			a.options[0].selected="selected";
+			// a.options[0].selected="selected";
 			b.options[0].selected="selected";
             c.style.display = 'none';
 		}
@@ -285,43 +296,6 @@ session_start();
             <div class="top-nav notification-row">                
                 <!-- notificatoin dropdown start-->
                 <ul class="nav pull-right top-menu">
-
-                    <!-- alert notification start-->
-                    <li id="alert_notificatoin_bar" class="dropdown">
-                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <i class="icon-bell-l"></i>
-                            <span class="badge bg-important">7</span>
-                        </a>
-                        <ul class="dropdown-menu extended notification">
-                            <div class="notify-arrow notify-arrow-blue"></div>
-                            <li>
-                                <p class="blue">You have 4 new notifications</p>
-                            </li>
-                            <li>
-                                <a href="#"><span class="label label-primary"><i class="icon_profile"></i></span>Friend Request<span class="small italic pull-right">5 mins</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                <span class="label label-warning"><i class="icon_pin"></i></span>John location.<span class="small italic pull-right">50 mins</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                <span class="label label-danger"><i class="icon_book_alt"></i></span>Project 3 Completed.<span class="small italic pull-right">1 hr</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                <span class="label label-success"><i class="icon_like"></i></span>Mick appreciated your work.<span class="small italic pull-right"> Today</span>
-                                </a>
-                            </li>                            
-                            <li>
-                                <a href="#">See all notifications</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <!-- alert notification end-->
                     <!-- user login dropdown start-->
                     <li class="dropdown">
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
@@ -406,10 +380,10 @@ session_start();
             <!--overview start-->
             <div class="row">
                 <div class="col-lg-12">
-                    <h3 class="page-header"><i class="fa fa-laptop"></i> Purchase Order Form</h3>
+                    <h3 class="page-header"><i class="icon_document"></i> Purchase Order Form</h3>
                     <ol class="breadcrumb">
-                        <li><i class="fa fa-building"></i>Home</a></li>
-                        <li><i class="icon_document_alt"></i>Purchase Order Form</li>						  	
+                        <!-- <li><i class="fa fa-building"></i>Home</a></li> -->
+                        <li><i class="icon_document"></i>Purchase Order Form</li>						  	
                     </ol>
                 </div>
             </div>
@@ -429,7 +403,7 @@ session_start();
 											<input type="radio" id="plant" name="plant" value="bravo" checked> Bravo
 										</label>
 										<label class="radio-inline">
-											<input type="radio" id="plant" name="plant" value="bravo"> Delta
+											<input type="radio" id="plant" name="plant" value="delta"> Delta
 										</label>
 									</div>
 								</div>
@@ -442,14 +416,14 @@ session_start();
 								<div class="form-group">
 									<label for="client" class="col-md-4 control-label">Client Name</label>
 									<div class="col-md-8">
-										<select id="client" name="client" class="form-control" style="width: 100%;" onchange="siteName(this.value); resetList(this.value);" required>
+										<select id="client" name="client" class="form-control" style="width: 100%;" onchange="siteName(this.value);" required>
 											<option value="">Select</option>
 <?php
-$sql = "SELECT client_name, client_id FROM client GROUP BY client_name ORDER BY client_name ASC";
-$result = mysqli_query($db, $sql);
-while ($row = mysqli_fetch_assoc($result)) {
-	echo "<option value='".$row['client_id']."'>".$row['client_name']."</option>";
-}
+    $sql = "SELECT client_name, client_id FROM client GROUP BY client_name ORDER BY client_name ASC";
+    $result = mysqli_query($db, $sql);
+    while ($row = mysqli_fetch_assoc($result)) {
+    	echo "<option value='".$row['client_id']."'>".$row['client_name']."</option>";
+    }
 ?>
 										</select>
 									</div>

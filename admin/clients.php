@@ -8,7 +8,7 @@
     include("../includes/config.php");
     include("../includes/function.php");
 
-    if(!isset($_SESSION['login_user']) || $_SESSION['login_office'] != 'head') {
+    if(!isset($_SESSION['login_user']) && !isset($_SESSION['login_office']) || $_SESSION['login_office'] != 'head') {
         header("location: ../login.php");
     }
 
@@ -194,10 +194,14 @@
 </script>
 <style>
 .table_page{
-    margin: auto;
-    margin-top: -30px;
-    width: 50%;
+    /*margin: auto;*/
+    margin-top: -40px;
+    /*width: 100%;*/
     text-align: center;
+}
+
+.table_row_count{
+    margin-top: -15px;
 }
 
 .filterable .panel-heading .pull-right {
@@ -242,53 +246,10 @@
             <!--logo start-->
 
             <!--logo end-->
-<?php
-    if($office == 'delta'){
-        echo "<a href='index.php' class='logo'>Quality Star <span class='lite'>Concrete Products, Inc.</span></a>";
-    }else{
-        echo "<a href='index.php' class='logo'>Starcrete <span class='lite'>Manufacturing Corporation</span></a>";
-    }
-?>
+            <a href='index.php' class='logo'>Starcrete <span class='lite'>Manufacturing Corporation</span></a>
             <div class="top-nav notification-row">                
                 <!-- notificatoin dropdown start-->
                 <ul class="nav pull-right top-menu">
-
-                    <!-- alert notification start-->
-                    <li id="alert_notificatoin_bar" class="dropdown">
-                        <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                            <i class="icon-bell-l"></i>
-                            <span class="badge bg-important">7</span>
-                        </a>
-                        <ul class="dropdown-menu extended notification">
-                            <div class="notify-arrow notify-arrow-blue"></div>
-                            <li>
-                                <p class="blue">You have 4 new notifications</p>
-                            </li>
-                            <li>
-                                <a href="#"><span class="label label-primary"><i class="icon_profile"></i></span>Friend Request<span class="small italic pull-right">5 mins</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                <span class="label label-warning"><i class="icon_pin"></i></span>John location.<span class="small italic pull-right">50 mins</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                <span class="label label-danger"><i class="icon_book_alt"></i></span>Project 3 Completed.<span class="small italic pull-right">1 hr</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                <span class="label label-success"><i class="icon_like"></i></span>Mick appreciated your work.<span class="small italic pull-right"> Today</span>
-                                </a>
-                            </li>                            
-                            <li>
-                                <a href="#">See all notifications</a>
-                            </li>
-                        </ul>
-                    </li>
-                    <!-- alert notification end-->
                     <!-- user login dropdown start-->
                     <li class="dropdown">
                         <a data-toggle="dropdown" class="dropdown-toggle" href="#">
@@ -323,9 +284,6 @@
                         <span>History</span>
                     </a>
                 </li>
-<!--                 <li class="sub-menu">                       
-                    <a class="" href="form_validation.html">Form Validation</a>
-                </li>   --> 
                 <li class="active">
                     <a class="" href="clients.php">
                         <i class="fa fa-address-book"></i>
@@ -364,43 +322,6 @@
                         <li><a class="" href="purchase_order_form.php">Purchase Order Form</a></li>                          
                     </ul>
                 </li>     
-                <!-- <li class="sub-menu">
-                <a href="javascript:;" class="">
-                <i class="icon_desktop"></i>
-                <span>UI Fitures</span>
-                <span class="menu-arrow arrow_carrot-right"></span>
-                </a>
-                <ul class="sub">
-                <li><a class="" href="general.html">Elements</a></li>
-                <li><a class="" href="buttons.html">Buttons</a></li>
-                <li><a class="" href="grids.html">Grids</a></li>
-                </ul>
-                </li>                         
-                <li class="sub-menu">
-                <a href="javascript:;" class="">
-                <i class="icon_table"></i>
-                <span>Tables</span>
-                <span class="menu-arrow arrow_carrot-right"></span>
-                </a>
-                <ul class="sub">
-                <li><a class="" href="basic_table.html">Basic Table</a></li>
-                </ul>
-                </li>
-
-                <li class="sub-menu">
-                <a href="javascript:;" class="">
-                <i class="icon_documents_alt"></i>
-                <span>Pages</span>
-                <span class="menu-arrow arrow_carrot-right"></span>
-                </a>
-                <ul class="sub">                          
-                <li><a class="" href="profile.html">Profile</a></li>
-                <li><a class="" href="login.html"><span>Login Page</span></a></li>
-                <li><a class="" href="blank.html">Blank Page</a></li>
-                <li><a class="" href="404.html">404 Error</a></li>
-                </ul> -->
-                </li>
-
             </ul>
             <!-- sidebar menu end-->
         </div>
@@ -415,8 +336,8 @@
                 <div class="col-md-12">
                     <h3 class="page-header"><i class="fa fa-laptop"></i> Clients</h3>
                     <ol class="breadcrumb">
-                        <li><i class="fa fa-home"></i>Home</li>
-                        <li><i class="fa fa-laptop"></i>Clients</li>                            
+                        <!-- <li><i class="fa fa-home"></i>Home</li> -->
+                        <li><i class="fa fa-laptop"></i><a href="clients.php">Clients</a></li>                            
                     </ol>
                 </div>
             </div>
@@ -427,7 +348,7 @@
                         <header class="panel-heading">
                              <form method="get" action="clients.php">
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <!-- <div class="col-md-4">
                                         <input type="text" name="search" class="form-control" value="<?php if(isset($_GET['search'])) { echo htmlentities ($_GET['search']); }?>">
                                     </div>
                                     <div class="col-md-1">
@@ -435,9 +356,17 @@
                                     </div>
                                     <div class="col-md-1">
                                          <a href="add_client.php" class="btn btn-info"><span class="fa fa-plus"></span> Add Client</a>
+                                    </div> -->
+                                    <div class="input-group col-md-8" style="margin: 5px 0px 5px 0px;">
+                                         <input type="text" name="search" class="form-control" placeholder="Search..." value="<?php if(isset($_GET['search'])) { echo htmlentities ($_GET['search']); }?>">
+                                        <span class="input-group-btn">
+                                            <button class="btn btn-info" type="submit" name="search_client">
+                                                <i class="fa fa-search"></i>
+                                            </button>
+                                        </span>
                                     </div>
-                                    <div class="pull-right">
-                                         
+                                    <div class="pull-right" style="margin-top: 5px; margin-right: 5px;">
+                                         <a href="add_client.php" class="btn btn-info"><span class="fa fa-plus"></span> Add Client</a>
                                     </div>
                                 </div>
                             </form>
@@ -497,7 +426,7 @@
         if($lastpage > 1){ 
             $pagination .= "<div class='pagination1'> <ul class='pagination'>";
             if ($page > $counter+1) {
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$prev&search=$search_word\"><<</a></li>"; 
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$prev&search=$search_word\">Previous</a></li>"; 
             }
 
             if ($lastpage < 7 + ($adjacents * 2)) { 
@@ -552,7 +481,7 @@
 
             //next button
             if ($page < $counter - 1) 
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$next&search=$search_word\">>></a></li>";
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$next&search=$search_word\">Next</a></li>";
             else
                 $pagination.= "";
             $pagination.= "</ul></div>\n"; 
@@ -561,9 +490,10 @@
         $sql_client = "SELECT * FROM client ".$string." ORDER BY client_name ASC LIMIT $start, $limit";
         $result_client = mysqli_query($db, $sql_client);
         // echo $sql_client;
+        $hash = 1;
         while ($row = mysqli_fetch_assoc($result_client)) {
             
-            $sql_contact = "SELECT p.client_contact_id, p.client_contact_name, p.client_id, n.client_contact_no 
+            $sql_contact = "SELECT p.client_contact_id, GROUP_CONCAT(DISTINCT p.client_contact_name ORDER BY p.client_contact_name ASC SEPARATOR ', ') as client_contact_name, p.client_id, n.client_contact_no 
                             FROM client_contact_person p, client_contact_number n
                             WHERE p.client_contact_id = n.client_contact_id
                             AND p.client_id = '".$row['client_id']."'";
@@ -579,20 +509,28 @@
                                         <td class="col-md-3"><strong><?php echo $row['client_contact_name']; ?></strong></td>
                                         <td class="col-md-1">
                                             <div class="row">
-                                                <div class="col-md-4">
+                                                <div class="col-md-1">
                                                      <form action="add_client_contact.php" method="post">
                                                         <input type="hidden" name="post_client_id" value="<?php echo $row['client_id']; ?>">
                                                         <!-- <button type="submit" class="btn btn-success btn-xs">Add Contact</button> -->
                                                         <div class="tooltips" data-original-title="Add Contact">
-                                                            <button class="btn btn-danger btn-xs"><span class="fa fa-plus-square"></span></button>
+                                                            <button class="btn btn-primary btn-xs"><span class="fa fa-plus-square"></span></button>
                                                         </div>
                                                     </form>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-1">
                                                      <form action="client_sites.php" method="post">
                                                         <input type="hidden" name="post_client_id" value="<?php echo $row['client_id']; ?>">
                                                         <div class="tooltips" data-original-title="View Sites">
-                                                            <button class="btn btn-success btn-xs" style="margin-bottom: 5px;"><span class="fa fa-eye"></span></button>
+                                                            <button class="btn btn-default btn-xs" style="margin-bottom: 5px;"><span class="fa fa-eye"></span></button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <form action="clients_update_info.php" method="post">
+                                                        <input type="hidden" name="post_client_id" value="<?php echo $row['client_id']; ?>">
+                                                        <div class="tooltips" data-original-title="Edit">
+                                                            <button class="btn btn-danger btn-xs" style="margin-bottom: 5px;"><span class="fa fa-edit"></span></button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -601,6 +539,7 @@
                                         </td>
                                     </tr>
 <?php
+            $hash++;
         }
     }else{
         
@@ -644,7 +583,7 @@
         if($lastpage > 1){ 
             $pagination .= "<div class='pagination1'> <ul class='pagination'>";
             if ($page > $counter+1) {
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$prev&search=$search_word\"><<</a></li>"; 
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$prev&search=$search_word\">Previous</a></li>"; 
             }
 
             if ($lastpage < 7 + ($adjacents * 2)) { 
@@ -699,7 +638,7 @@
 
             //next button
             if ($page < $counter - 1) 
-                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$next&search=$search_word\">>></a></li>";
+                $pagination.= "<li class='page-item'><a class='page-link' href=\"$targetpage?page=$next&search=$search_word\">Next</a></li>";
             else
                 $pagination.= "";
             $pagination.= "</ul></div>\n"; 
@@ -708,9 +647,10 @@
         $sql_client = "SELECT * FROM client ".$string." ORDER BY client_name ASC LIMIT $start, $limit";
         $result_client = mysqli_query($db, $sql_client);
         // echo $sql_client;
+        $hash = 1;
         while ($row = mysqli_fetch_assoc($result_client)) {
             
-            $sql_contact = "SELECT p.client_contact_id, p.client_contact_name, p.client_id, n.client_contact_no 
+            $sql_contact = "SELECT p.client_contact_id, GROUP_CONCAT(DISTINCT p.client_contact_name ORDER BY p.client_contact_name ASC SEPARATOR ', ') as client_contact_name, p.client_id, n.client_contact_no 
                             FROM client_contact_person p, client_contact_number n
                             WHERE p.client_contact_id = n.client_contact_id
                             AND p.client_id = '".$row['client_id']."'";
@@ -726,20 +666,27 @@
                                         <td class="col-md-3"><strong><?php echo $row['client_contact_name']; ?></strong></td>
                                         <td class="col-md-1">
                                             <div class="row">
-                                                <div class="col-md-4">
+                                                <div class="col-md-1">
                                                      <form action="add_client_contact.php" method="post">
                                                         <input type="hidden" name="post_client_id" value="<?php echo $row['client_id']; ?>">
-                                                        <!-- <button type="submit" class="btn btn-success btn-xs">Add Contact</button> -->
                                                         <div class="tooltips" data-original-title="Add Contact">
-                                                            <button class="btn btn-danger btn-xs"><span class="fa fa-plus-square"></span></button>
+                                                            <button class="btn btn-primary btn-xs"><span class="fa fa-plus-square"></span></button>
                                                         </div>
                                                     </form>
                                                 </div>
-                                                <div class="col-md-4">
+                                                <div class="col-md-1">
                                                      <form action="client_sites.php" method="post">
                                                         <input type="hidden" name="post_client_id" value="<?php echo $row['client_id']; ?>">
                                                         <div class="tooltips" data-original-title="View Sites">
-                                                            <button class="btn btn-info btn-xs" style="margin-bottom: 5px;"><span class="fa fa-eye"></span></button>
+                                                            <button class="btn btn-default btn-xs" style="margin-bottom: 5px;"><span class="fa fa-eye"></span></button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <form action="clients_update_info.php" method="post">
+                                                        <input type="hidden" name="post_client_id" value="<?php echo $row['client_id']; ?>">
+                                                        <div class="tooltips" data-original-title="Edit">
+                                                            <button class="btn btn-danger btn-xs" style="margin-bottom: 5px;"><span class="fa fa-edit"></span></button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -748,6 +695,7 @@
                                         </td>
                                     </tr>
 <?php
+            $hash++;
         }
     }
 ?>
@@ -759,14 +707,23 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-12">
+                <div class="col-md-4">
+                    <div class="table_row_count">
+<?php
+                    if(isset($hash)){
+                        echo "Showing " . ($start+1)  . " to " . ($start + $hash - 1) . " of " . $total . " entries"; 
+                    }
+?>
+                    </div>
+                </div>
+                <div class="col-md-4">
                     <div class="table_page">
 <?php
-                        echo $pagination; 
+                    echo $pagination; 
 ?>      
                     </div>
                 </div>
-            </div> 
+            </div>   
             <div class="text-right">
                 <div class="credits">
                     <!-- 

@@ -8,7 +8,7 @@
     include("../includes/config.php");
     include("../includes/function.php");
 
-    if(!isset($_SESSION['login_user']) || $_SESSION['login_office'] != 'head') {
+    if(!isset($_SESSION['login_user']) && !isset($_SESSION['login_office']) || $_SESSION['login_office'] != 'head') {
         header("location: ../login.php");
     }
 

@@ -4,33 +4,33 @@ session_start();
 ?>
 <!DOCTYPE html>
 <?php
-	
-	include("../includes/config.php");
-	include("../includes/function.php");
+    
+    include("../includes/config.php");
+    include("../includes/function.php");
 
-	if(!isset($_SESSION['login_user']) && !isset($_SESSION['login_office']) || $_SESSION['login_office'] != 'head') {
+    if(!isset($_SESSION['login_user']) && !isset($_SESSION['login_office']) || $_SESSION['login_office'] != 'head') {
         header("location: ../login.php");
     }
 
     if (isset($_REQUEST['fk_po_id']) && isset($_REQUEST['po_no_delivery'])) {
         $_POST['fk_po_id'] = $_REQUEST['fk_po_id'];
-    	$_POST['po_no_delivery'] = $_REQUEST['po_no_delivery'];
+        $_POST['po_no_delivery'] = $_REQUEST['po_no_delivery'];
     }
 
     $fk_po_id = $_POST['fk_po_id'];
     $po_no_delivery = $_POST['po_no_delivery'];
 
     $user_query = $db->prepare("SELECT * FROM users WHERE username = ?");
-	$user_query->bind_param('s', $_SESSION['login_user']);
-	$user_query->execute();
-	$result = $user_query->get_result();
-	$user = $result->fetch_assoc();
+    $user_query->bind_param('s', $_SESSION['login_user']);
+    $user_query->execute();
+    $result = $user_query->get_result();
+    $user = $result->fetch_assoc();
 
-	$office = $user['office'];
-	$position = $user['position'];
+    $office = $user['office'];
+    $position = $user['position'];
 
-	// $po = getPurchaseOrderDetails($db, $purchase_unique_id);
-	// $po_no = $po['purchase_order_no'];
+    // $po = getPurchaseOrderDetails($db, $purchase_unique_id);
+    // $po_no = $po['purchase_order_no'];
 
 
 ?>
@@ -62,7 +62,7 @@ session_start();
     <link href="css/widgets.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <link href="css/style-responsive.css" rel="stylesheet" />
-    <link href="css/xcharts.min.css" rel=" stylesheet">	
+    <link href="css/xcharts.min.css" rel=" stylesheet"> 
     <link href="css/jquery-ui-1.10.4.min.css" rel="stylesheet">
 
      <!-- javascripts -->
@@ -171,7 +171,7 @@ session_start();
         });
 
         $.ajax({
-            url: 'bravo_purchase_order.php',
+            url: 'delta_purchase_order.php',
             method: get,
             data:{
                 var1 : val1
@@ -218,9 +218,7 @@ session_start();
      text-align: left;
      font-weight: bold;
 }
-.page_links a{
-    color: inherit;
-}
+
 </style>
 </head>
 <body>
@@ -322,58 +320,58 @@ session_start();
         <section id="main-content">
             <section class="wrapper">            
                 <!--overview start-->
-               	<div class="row">
-	                <div class="col-lg-12 page_links">
-	                    <h3 class="page-header"><i class="fa fa-laptop"></i> P.O. No. <?php echo $po_no_delivery; ?></h3>
-	                    <ol class="breadcrumb">
-	                        <li><i class="fa fa-building"></i>Bravo</li>
-	                        <li><i class="icon_document_alt"></i><a href="bravo_delivery_order.php">Delivery Order</a></li>
-	                        <li><i class="fa fa-info-circle"></i><a href="bravo_delivery_issue.php">No DR. No. <span class='badge'><?php echo countPendingPo($db, 'bravo'); ?></span></a></li>
-	                        <li><i class="fa fa-truck"></i><a href="bravo_delivery_success.php">Delivered</a></li>
-	                        <li><i class="fa fa-reply"></i><a href="bravo_delivery_backload.php">Backload</a></li>                             
-	                    </ol>
-	                </div>
-	            </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3 class="page-header"><i class="fa fa-laptop"></i> P.O. No. <?php echo $po_no_delivery; ?></h3>
+                        <ol class="breadcrumb">
+                            <li><i class="fa fa-building"></i>Delta</li>
+                            <li><a href="delta_delivery_order.php"><i class="icon_document_alt"></i>Delivery Order</a></li>
+                            <li><a href="delta_delivery_issue.php"><i class="fa fa-info-circle"></i>No DR. No. <span class='badge'><?php echo countPendingPo($db, 'delta'); ?></span></a></li>
+                            <li><a href="delta_delivery_success.php"><i class="fa fa-truck"></i>Delivered</a></li>
+                            <li><a href="delta_delivery_backload.php"><i class="fa fa-reply"></i>Backload</a></li>                             
+                        </ol>
+                    </div>
+                </div>
 
                 <div class="row">
                     <div class="col-lg-12">
                         <section class="panel">
-                            <form action="bravo_po_details.php" method="get" class="form-inline">
+                            <form action="delta_po_details.php" method="get" class="form-inline">
                                 <header class="panel-heading">
 
                                 </header>
                             </form>
                             <div class="table-responsive filterable">
-                            	<table class="table table-striped table-bordered">
-                            		<thead>
-                            			<tr class="filterable">
-											<th colspan="2" style="text-align: left;">Balance: <?php echo number_format(getDeliveryBalance($db, $po_no_delivery, $fk_po_id)); ?> pcs</th>
-											<th colspan="2">Delivered: <?php echo number_format(getDeliveryDelivered($db, $po_no_delivery, 'bravo')); ?> pcs</th>
-											<th colspan="4">On Delivery: <?php echo number_format(getDeliveryOnDelivery($db, $po_no_delivery, 'bravo')); ?> pcs</th>
-											<th colspan="4">
-												<button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="glyphicon glyphicon-filter"></span> Filter</button>
-											</th>
-										</tr>
-										<tr class="filters">
-											<th class="col-md-1">P.O. No.</th>
-											<th class="col-md-1"><input type="text" class="form-control" placeholder="DR No." disabled></th>
-											<th class="col-md-1"><input type="text" class="form-control" placeholder="Item" disabled></th>
-											<th class="col-md-1">Quantity</th>
-											<th class="col-md-2"><input type="text" class="form-control" placeholder="Site Name" disabled></th>
-											<th class="col-md-2"><input type="text" class="form-control" placeholder="Address" disabled></th>
-											<th class="col-md-1">Contact</th>
-											<th class="col-md-1">Date Transaction</th>
-											<th class="col-md-1">Status</th>
-										</tr>
-                            		</thead>
-    								<tbody>
+                                <table class="table table-striped table-bordered">
+                                    <thead>
+                                        <tr class="filterable">
+                                            <th colspan="2" style="text-align: left;">Balance: <?php echo number_format(getDeliveryBalance($db, $po_no_delivery, $fk_po_id)); ?> pcs</th>
+                                            <th colspan="2">Delivered: <?php echo number_format(getDeliveryDelivered($db, $po_no_delivery, 'delta')); ?> pcs</th>
+                                            <th colspan="2">On Delivery: <?php echo number_format(getDeliveryOnDelivery($db, $po_no_delivery, 'delta')); ?> pcs</th>
+                                            <th colspan="4">
+                                                <button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="glyphicon glyphicon-filter"></span> Filter</button>
+                                            </th>
+                                        </tr>
+                                        <tr class="filters">
+                                            <th class="col-md-1">P.O. No.</th>
+                                            <th class="col-md-1"><input type="text" class="form-control" placeholder="DR No." disabled></th>
+                                            <th class="col-md-1"><input type="text" class="form-control" placeholder="Item" disabled></th>
+                                            <th class="col-md-1">Quantity</th>
+                                            <th class="col-md-2"><input type="text" class="form-control" placeholder="Site Name" disabled></th>
+                                            <th class="col-md-2"><input type="text" class="form-control" placeholder="Address" disabled></th>
+                                            <th class="col-md-1">Contact</th>
+                                            <th class="col-md-1">Date Transaction</th>
+                                            <th class="col-md-1">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
 <?php
-	// $sql = "SELECT *, s.site_name, s.site_address, DATE_FORMAT(date_delivery,'%m/%d/%y') as date_delivery1
-	// 		FROM delivery d, site s
-	// 		WHERE po_no_delivery = '$po_no_delivery'
-	// 		AND d.site_id = s.site_id
-	// 		AND office = 'bravo'
-	// 		ORDER BY date_delivery DESC";
+    // $sql = "SELECT *, s.site_name, s.site_address, DATE_FORMAT(date_delivery,'%m/%d/%y') as date_delivery1
+    //      FROM delivery d, site s
+    //      WHERE po_no_delivery = '$po_no_delivery'
+    //      AND d.site_id = s.site_id
+    //      AND office = 'delta'
+    //      ORDER BY date_delivery DESC";
 
     $sql = "SELECT *, s.site_name, s.site_address, DATE_FORMAT(date_delivery,'%m/%d/%y') as date_delivery1, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name
             FROM delivery d, site s, purchase_order_contact c, site_contact_person p
@@ -381,57 +379,57 @@ session_start();
             AND d.fk_po_id = c.purchase_id
             AND c.site_contact_id = p.site_contact_person_id
             AND d.site_id = s.site_id
-            AND office = 'bravo'
+            AND office = 'delta'
             GROUP BY delivery_id
             ORDER BY date_delivery DESC";
-	$result = mysqli_query($db, $sql);
-	if(mysqli_num_rows($result) > 0){
-		while ($row = mysqli_fetch_assoc($result)) {
-		// $date = date_create($row['date_delivery']);
+    $result = mysqli_query($db, $sql);
+    if(mysqli_num_rows($result) > 0){
+        while ($row = mysqli_fetch_assoc($result)) {
+        // $date = date_create($row['date_delivery']);
 ?>
-							<tr>
-								<td class="col-md-1"><strong><?php echo $row['po_no_delivery']; ?></strong></td>
-								<td class="col-md-1"><strong><?php echo $row['delivery_receipt_no']; ?></strong></td>
-								<td class="col-md-1"><strong><?php echo $row['item_no']; ?></strong></td>
-								<td class="col-md-1"><strong><?php echo number_format($row['quantity']); ?> pcs</strong></td>
-								<td class="col-md-2"><strong><?php echo $row['site_name']; ?></strong></td>
-								<td class="col-md-2"><strong><?php echo $row['site_address']; ?></strong></td>
-								<td class="col-md-1"><strong><?php echo $row['site_contact_name']; ?></strong></td>
-								<td class='col-md-1'><strong><?php echo $row['date_delivery1']; ?></strong></td>
+                            <tr>
+                                <td class="col-md-1"><strong><?php echo $row['po_no_delivery']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['delivery_receipt_no']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['item_no']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo number_format($row['quantity']); ?> pcs</strong></td>
+                                <td class="col-md-2"><strong><?php echo $row['site_name']; ?></strong></td>
+                                <td class="col-md-2"><strong><?php echo $row['site_address']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['site_contact_name']; ?></strong></td>
+                                <td class='col-md-1'><strong><?php echo $row['date_delivery1']; ?></strong></td>
 <?php
-			if($row['remarks'] == 'Delivered'){
+            if($row['remarks'] == 'Delivered'){
 ?>
-								<td class="col-md-1" style="background-color: green; color: white;"><strong><?php echo $row['remarks']; ?></strong></td>
+                                <td class="col-md-1" style="background-color: green; color: white;"><strong><?php echo $row['remarks']; ?></strong></td>
 <?php
-			}else if($row['remarks'] == 'Backload'){
+            }else if($row['remarks'] == 'Backload'){
 ?>
-								<td class="col-md-1" style="background-color: #e60000; color: white;"><strong><?php echo $row['remarks']; ?></strong></td>
+                                <td class="col-md-1" style="background-color: #e60000; color: white;"><strong><?php echo $row['remarks']; ?></strong></td>
 <?php
-			}else if($row['remarks'] == 'On Delivery'){
+            }else if($row['remarks'] == 'On Delivery'){
 ?>
-								<td class="col-md-1" style="background-color: #ffcc00;"><strong><?php echo $row['remarks']; ?></strong></td>
+                                <td class="col-md-1" style="background-color: #ffcc00;"><strong><?php echo $row['remarks']; ?></strong></td>
 <?php
-			}
+            }
 ?>
-							</tr>
+                            </tr>
 <?php
-		}
-	}else{
+        }
+    }else{
 ?>
-							<tr>
+                            <tr>
                                 <td colspan="10" style='min-height: 100%; background: white; text-align:center; vertical-align: middle;'><h4><p class='text-muted'>No data found</p></h4>
                                 </td>
                             </tr>
 <?php
-	}
+    }
 ?>
 
-	
-							
-									</tbody>
-                            	</table>
+    
+                            
+                                    </tbody>
+                                </table>
                             </div>
-                        </section>	
+                        </section>  
                     </div>
                 </div>
             </section>

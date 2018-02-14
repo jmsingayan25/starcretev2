@@ -8,7 +8,7 @@ session_start();
 	include("../includes/config.php");
 	include("../includes/function.php");
 
-	if(!isset($_SESSION['login_user']) || $_SESSION['login_office'] != 'head') {
+	if(!isset($_SESSION['login_user']) && !isset($_SESSION['login_office']) || $_SESSION['login_office'] != 'head') {
         header("location: ../login.php");
     }
 
@@ -316,7 +316,7 @@ session_start();
 									<div class="form-group">
 										<div class="col-md-offset-8 col-md-4">
 											<input type="submit" name="submit" id="submit" value="Submit" class="btn btn-primary">
-											<a href="bravo_purchase_order.php" class="btn btn-warning">Cancel</a>
+											<a href="delta_purchase_order.php" class="btn btn-warning">Cancel</a>
 										</div>
 									</div>
 								</form>
@@ -422,11 +422,11 @@ session_start();
 		if(mysqli_query($db, $sql_update) && mysqli_query($db, $update_quantity_balance) && mysqli_query($db, $address_update)){
 			if(isset($history)){
 				mysqli_query($db, $history);
-				echo "<script>alert('P.O. No. $update_purchase_order_no details has been updated'); window.location.href='bravo_purchase_order.php'</script>";
+				echo "<script>alert('P.O. No. $update_purchase_order_no details has been updated'); window.location.href='delta_purchase_order.php'</script>";
 				unset($_SESSION['post_purchase_id']);
 				// echo $history;
 			}else{
-				echo "<script> alert('P.O. No. $update_purchase_order_no details has been updated');window.location.href='bravo_purchase_order.php'</script>";
+				echo "<script> alert('P.O. No. $update_purchase_order_no details has been updated');window.location.href='delta_purchase_order.php'</script>";
 				unset($_SESSION['post_purchase_id']);
 			}
 		}else{

@@ -8,7 +8,7 @@
     include("../includes/config.php");
     include("../includes/function.php");
 
-    if(!isset($_SESSION['login_user']) || $_SESSION['login_office'] != 'head') {
+    if(!isset($_SESSION['login_user']) && !isset($_SESSION['login_office']) || $_SESSION['login_office'] != 'head') {
         header("location: ../login.php");
     }
 
@@ -327,7 +327,7 @@
 														</td>
 														<td class="col-md-4">
 															<div class="form-group">
-																<input type="button" onclick="add_row();" class='btn btn-primary btn-md' autocomplete="off" value="Add Item">
+																<input type="button" onclick="add_row();" class='btn btn-primary btn-md' autocomplete="off" value="Add">
 															</div>
 														</td>
 													</tr>
@@ -359,7 +359,7 @@
 
 		$insert_site = "INSERT INTO site(site_name, site_address, client_id) VALUES('$site_name','$site_address',$client_id)";
 
-		echo $insert_site;
+		// echo $insert_site;
 
 		if(mysqli_query($db, $insert_site)){
 
@@ -395,7 +395,7 @@
 					$insert_contact_no = "INSERT INTO site_contact_number(site_contact_no,site_contact_person_id)
 											VALUES('$explode_no[$k]','".$row_contact_id['site_contact_person_id']."')";
 
-					echo $insert_contact_no."<br>";
+					// echo $insert_contact_no."<br>";
 					mysqli_query($db, $insert_contact_no);
 
 				}

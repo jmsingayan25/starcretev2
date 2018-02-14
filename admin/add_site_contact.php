@@ -8,7 +8,7 @@
     include("../includes/config.php");
     include("../includes/function.php");
 
-    if(!isset($_SESSION['login_user']) || $_SESSION['login_office'] != 'head') {
+    if(!isset($_SESSION['login_user']) && !isset($_SESSION['login_office']) || $_SESSION['login_office'] != 'head') {
         header("location: ../login.php");
     }
 
@@ -290,12 +290,12 @@
 													<tr id="row1" style="text-align: center;">
 														<td class="col-md-3">
 															<div class="form-group">
-																<input type="type" name="contact_name[]" class="form-control" autocomplete="off" required>
+																<input type="text" name="contact_name[]" class="form-control" autocomplete="off" required>
 															</div>
 														</td>
 														<td class="col-md-5">
 															<div class="form-group" >
-																<input type="type" name="contact_no[]" class="form-control" autocomplete="off" required>
+																<input type="text" name="contact_no[]" class="form-control" autocomplete="off" required>
 															</div>
 														</td>
 														<td class="col-md-4">
