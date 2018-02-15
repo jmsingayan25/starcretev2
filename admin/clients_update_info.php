@@ -294,7 +294,7 @@
 											<td class="col-md-6">
 												<input type="hidden" name="contact_id[]" value="<?php echo $sql_row['client_contact_id']; ?>">
 												<!-- <div class="form-group"> -->
-													<input type="text" name="contact_name[]" class="form-control" autocomplete="off" value="<?php echo $sql_row['client_contact_name']; ?>" required>
+													<input type="text" name="update_contact_name[]" class="form-control" autocomplete="off" value="<?php echo $sql_row['client_contact_name']; ?>" required>
 												<!-- </div> -->
 											</td>
 											<td class="col-md-6">
@@ -305,15 +305,21 @@
 				WHERE client_contact_id = '".$sql_row['client_contact_id']."'";
 	$sql_no_result = mysqli_query($db, $sql_no);
 
+    $count = 0;
 	while ($sql_no_row = mysqli_fetch_assoc($sql_no_result)) {
-        // $array_contact = array('client_contact_id' => $sql_row['client_contact_id'], 'contact_no_id' => $sql_no_row['client_contact_no_id']);
-        // $array_contact['client_contact_id'][] = $sql_row['client_contact_id'];
-        $array_contact['client'][][$sql_row['client_contact_id']][] = $sql_no_row['client_contact_no_id'];
+
+        $array_contact['contact'][] = array(
+                                        'client' => array(
+                                            'client_contact_id' => $sql_row['client_contact_id'], 
+                                            'contact_no_id' => $sql_no_row['client_contact_no_id']
+                                        )
+                                    );
+        
 ?>
 												<div class="row" style="margin-bottom: 5px;">
                                                     <input type="hidden" name="contact_no_id[]" value="<?php echo $sql_no_row['client_contact_no_id']; ?>">
 													<div class="col-md-8">
-														<input type="text" name="contact_no[]" class="form-control" autocomplete="off" value="<?php echo $sql_no_row['client_contact_no']; ?>" required>
+														<input type="text" name="update_contact_no[]" class="form-control" autocomplete="off" value="<?php echo $sql_no_row['client_contact_no']; ?>" required>
 													</div>
 													<div class="col-md-1">
 														<form action="clients_update_info.php" method="post" onsubmit="return confirm('Proceed?');">
@@ -333,6 +339,7 @@
 											</td> -->
 
 <?php
+        $count++;
 	}
 
 ?>
@@ -364,31 +371,70 @@
 		$count = 0;
 		$update_client_name = mysqli_real_escape_string($db, $_POST['update_client_name']);
 		$update_address = mysqli_real_escape_string($db, $_POST['update_client_address']);
+        $contact_id = $_POST['contact_id'];
+       
+        $update_client_info = "UPDATE client SET client_name = '$update_client_name', address = '$update_address' WHERE client_id = '$client_id'";
+        // echo $update_client_info."<br>";
+        mysqli_query($db, $update_client_info);
 
-        $count = 0;
-        foreach ($array_contact as $contact) {
-            echo $contact[$count][$contact][0]."<br>";
-            $count++;
-        }
-        // for ($i=0; $i < count($array_contact); $i++) { 
-        //     echo $array_contact->[];
-        // }
-               
-        // }
-		// if(isset($_POST['contact_id'])){
-		// 	$update_contact_name = $_POST['contact_name'];
-		// 	$update_contact_number = $_POST['contact_no'];
-		// 	$contact_id = $_POST['contact_id'];
-		// 	$contact_no_id = $_POST['contact_no_id'];
-		// }else{
-		// 	$update_contact_name = [];
-		// }
-		// echo $update_contact_name;
-		// echo implode(" ", $hidden_contact_no_id);
-        echo json_encode($array_contact);
-		// $update_client_info = "UPDATE client SET client_name = '$update_client_name', address = '$update_address' WHERE client_id = '$client_id'";
-		// // echo $update_client_info."<br>";
-		// // mysqli_query($db, $update_client_info);
+        // if(isset($update_contact_no)){
+
+            $update_contact_name = $_POST['update_contact_name'];
+            $update_contact_no = $_POST['update_contact_no'];
+            $contact_encode = json_encode($array_contact);
+            $contact_decode = json_decode($contact_encode);
+
+            if(count($contact_decode->contact) > 0){
+
+                for ($i=0; $i < count($contact_decode->contact); $i++) { 
+
+                    $client_contact_id = $contact_decode->contact[$i]->client->client_contact_id;
+                    $client_contact_no_id = $contact_decode->contact[$i]->client->contact_no_id;
+
+                    // for ($j=0; $j < count($update_contact_name); $j++) { 
+                    //     $update_name = "UPDATE client_contact_person 
+                    //                 SET client_contact_name = '$update_contact_name[$j]'
+                    //                 WHERE client_contact_id = '$client_contact_id'";
+
+                    //     echo $update_name."<br>";
+                    //     // mysqli_query($db, $update_name);
+                    // }
+                    
+
+                    $update_contact_info = "UPDATE client_contact_number 
+                                            SET client_contact_no = '$update_contact_no[$i]' 
+                                            WHERE client_contact_id = '$client_contact_id'
+                                            AND client_contact_no_id = '$client_contact_no_id'";
+
+                    // echo $update_contact_info."<br>";
+                    mysqli_query($db, $update_contact_info); 
+                    $count++;      
+                }
+
+                for ($j=0; $j < count($contact_id); $j++) { 
+                    
+                    $update_name = "UPDATE client_contact_person 
+                                    SET client_contact_name = '$update_contact_name[$j]'
+                                    WHERE client_contact_id = '$contact_id[$j]'";
+
+                    // echo $update_name."<br>";
+                mysqli_query($db, $update_name);
+                }
+                if($count == count($contact_decode->contact)){
+                    echo "<script> 
+                            alert('Data updated successfully...');
+                            window.location.href='clients.php'
+                        </script>";
+                }
+            }else{
+                echo "<script> 
+                        alert('Data updated successfully...');
+                        window.location.href='clients.php'
+                    </script>";
+            }
+        
+		
+		
 
 		// if(count($update_contact_name) > 0){
 		// 	for ($i=0; $i < count($update_contact_name); $i++) { 
