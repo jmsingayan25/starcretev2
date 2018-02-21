@@ -278,10 +278,10 @@
 												<table id="item_table" align="center">
 													<tr>
 														<td class="col-md-4">
-															<label for="item_no">Name</label>
+															<label for="item_no">Name<span class="required" style="color: red;">*</span></label>
 														</td>
 														<td class="col-md-4">
-															<label for="quantity">Number</label>
+															<label for="quantity">Number<span class="required" style="color: red;">*</span></label>
 														</td>
 														<td class="col-md-4">
 															<label for="button"></label>
@@ -300,13 +300,17 @@
 														</td>
 														<td class="col-md-4">
 															<div class="form-group">
-																<input type="button" onclick="add_row();" class='btn btn-primary btn-md' autocomplete="off" value="Add Item">
+																<input type="button" onclick="add_row();" class='btn btn-primary btn-md' autocomplete="off" value="Add">
 															</div>
 														</td>
 													</tr>
 												</table>
 											</div>
 										</div>
+										<footer class="panel-footer">
+											<p class="help-block"><span class="required" style="color: red;">*</span> - required</p>
+											<p class="help-block">Note: Put a comma between contact numbers</p>
+										</footer>
 									</section>
 								</div>
 							</div>
@@ -324,7 +328,7 @@
 
 		$count = 0;
 		$contact_name = $_POST['contact_name'];
-		$contact_no = $_POST['contact_no'];
+		$contact_no = str_replace("-", "", $_POST['contact_no']);
 
 		for ($i=0; $i < count($contact_name); $i++) { 
 			

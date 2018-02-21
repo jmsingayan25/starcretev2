@@ -12,7 +12,7 @@
         header("location: ../login.php");
     }
 
-    if(!isset($_GET['page']) || $_GET['page'] == ''){
+     if(!isset($_GET['page']) || $_GET['page'] == ''){
         $_GET['page'] = 0;
     }
 
@@ -73,7 +73,7 @@
     <link href="css/widgets.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
     <link href="css/style-responsive.css" rel="stylesheet" />
-    <link href="css/xcharts.min.css" rel=" stylesheet">	
+    <link href="css/xcharts.min.css" rel=" stylesheet"> 
     <link href="css/jquery-ui-1.10.4.min.css" rel="stylesheet">
 
      <!-- javascripts -->
@@ -116,7 +116,6 @@
     <script src="js/sparklines.js"></script>    
     <script src="js/charts.js"></script>
     <script src="js/jquery.slimscroll.min.js"></script>
-
     <!-- =======================================================
     Theme Name: NiceAdmin
     Theme URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
@@ -240,7 +239,7 @@
 </style>
 </head>
 <body>
-<!-- container section start -->
+    <!-- container section start -->
     <section id="container" class="">
         <header class="header dark-bg">
             <div class="toggle-nav">
@@ -281,82 +280,79 @@
                 <!-- notificatoin dropdown end-->
             </div>
         </header>   
-        <!--sidebar start-->
-	    <aside>
-	        <div id="sidebar"  class="nav-collapse ">
-	            <!-- sidebar menu start-->
-	            <ul class="sidebar-menu">                
-	                <li class="">
-	                    <a class="" href="index.php">
-	                        <i class="icon_house"></i>
-	                        <span>History</span>
-	                    </a>
-	                </li>
-	                <li class="sub-menu">
-	                    <a href="javascript:;" class="">
-	                        <i class="fa fa-building"></i>
-	                        <span>Purchase Order</span>
-	                        <span class="menu-arrow arrow_carrot-right"></span>
-	                    </a>
-	                    <ul class="sub">
-	                        <li><a class="" href="plant_purchase_order.php">Pending Order</a></li>                          
-	                        <li><a class="" href="plant_cancelled_order.php">Cancelled Order</a></li>
-	                    </ul>
-	                </li>  
-	                <li class="sub-menu">
-	                    <a href="javascript:;" class="">
-	                        <i class="fa fa-building"></i>
-	                        <span>Delivery Order</span>
-	                        <span class="menu-arrow arrow_carrot-right"></span>
-	                    </a>
-	                    <ul class="sub">
-                            <li><a class="" href="plant_delivery_issue.php">Existing P.O. <span class='badge'><?php echo getCountPlantPo($db, $office); ?></span></a></li>   
-	                        <li><a class="" href="plant_delivery_order.php">On Delivery Order <span class="badge"><?php echo getDeliveryCountOnDeliveryOffice($db, $office); ?></span></a></li>                   
-	                        <li><a class="" href="plant_delivery_delivered.php">Delivered Order</a></li>
-	                        <li><a class="" href="plant_delivery_backloaded.php">Backloaded Order</a></li>
-	                    </ul>
-	                </li>  
-	            </ul>
-	            <!-- sidebar menu end-->
-	        </div>
-	    </aside>
-	    <!--sidebar end-->
+        <!--sidebar start-->    
 
-	    <!--main content start-->
-	    <section id="main-content">
-	        <section class="wrapper">            
-	            <!--overview start-->
-	            <div class="row">
-	                <div class="col-lg-12 page_links">
-	                    <h3 class="page-header"><i class="icon_document"></i><a href="plant_purchase_order.php"> Purchase Order</a></h3>
-	                    <ol class="breadcrumb">
-	                        <li><i class="fa fa-building"></i>Purchase Order</li>
-	                        <li><i class="icon_document"></i><a href="plant_purchase_order.php" style="color: blue;">Pending Order</a></li>						  	
-	                    </ol>
-	                </div>
-	            </div>
+        <aside>
+            <div id="sidebar"  class="nav-collapse ">
+                <!-- sidebar menu start-->
+                <ul class="sidebar-menu">                
+                    <li class="">
+                        <a class="" href="index.php">
+                            <i class="icon_house"></i>
+                            <span>History</span>
+                        </a>
+                    </li>
+                    <li class="sub-menu">
+                        <a href="javascript:;" class="">
+                            <i class="fa fa-building"></i>
+                            <span>Purchase Order</span>
+                            <span class="menu-arrow arrow_carrot-right"></span>
+                        </a>
+                        <ul class="sub">
+                            <li><a class="" href="plant_purchase_order.php">Pending P.O.</a></li>                         
+                            <li><a class="" href="plant_purchase_deliver_order.php">Delivered P.O.</a></li>
+                            <li><a class="" href="plant_cancelled_order.php">Cancelled P.O.</a></li>
+                        </ul>
+                    </li>  
+                    <li class="sub-menu">
+                        <a href="javascript:;" class="">
+                            <i class="fa fa-building"></i>
+                            <span>Delivery Order</span>
+                            <span class="menu-arrow arrow_carrot-right"></span>
+                        </a>
+                        <ul class="sub">
+                            <li><a class="" href="plant_delivery_issue.php">Existing P.O. <span class='badge'><?php echo getCountPlantPo($db, $office); ?></span></a></li>    
+                            <li><a class="" href="plant_delivery_order.php">On Delivery Order <span class="badge"><?php echo getDeliveryCountOnDeliveryOffice($db, $office); ?></span></a></li>                      
+                            <li><a class="" href="plant_delivery_delivered.php">Delivered Order</a></li>
+                            <li><a class="" href="plant_delivery_backloaded.php">Backloaded Order</a></li>
+                        </ul>
+                    </li> 
+                </ul>
+                <!-- sidebar menu end-->
+            </div>
+        </aside>
+        <!--sidebar end-->
 
-	            <div class="row">
-	            	<div class="col-md-12">
-	                    <section class="panel">
-	                        <form action="plant_purchase_order.php" method="get" class="form-inline">
-	                        	<header class="panel-heading">
-	                                <div class="row" style="margin-bottom: 5px;">
-	                                    <div class="col-md-2">
-	                                        <div class="form-group">
-	                                            <label for="start_date">Start Date:</label><input type="date" name="start_date" class="form-control" value="<?php if(isset($_GET['start_date'])) { echo htmlentities ($_GET['start_date']); }?>">
-	                                        </div>
-	                                        
-	                                    </div>
-	                                    <div class="col-md-2">
-	                                        <div class="form-group">
-	                                            <label for="end_date">End Date:</label><input type="date" name="end_date" class="form-control" value="<?php if(isset($_GET['end_date'])) { echo htmlentities ($_GET['end_date']); }?>">
-	                                       </div>
+        <!--main content start-->
+        <section id="main-content">
+            <section class="wrapper">            
+                <!--overview start-->
+                <div class="row">
+                    <div class="col-lg-12 page_links">
+                        <h3 class="page-header"><i class="icon_document"></i><a href="plant_purchase_deliver_order.php">Delivered P.O.</a></h3>
+                        <ol class="breadcrumb">
+                            <li><i class="fa fa-building"></i>Purchase Order</li>
+                            <li><i class="fa fa-laptop"></i><a href="plant_purchase_deliver_order.php" style="color: blue;">Delivered P.O.</a></li>                           
+                        </ol>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <section class="panel">
+                            <form action="plant_purchase_deliver_order.php" method="get" class="form-inline">
+                                <header class="panel-heading">
+                                    <div class="row" style="margin-bottom: 5px;">
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="start_date">Start Date:</label><input type="date" name="start_date" class="form-control" value="<?php if(isset($_GET['start_date'])) { echo htmlentities ($_GET['start_date']); }?>">
+                                            </div>
+                                            
                                         </div>
-	                                        
-	                                   <!--  <div class="col-md-2" style="margin-top: 39px;">
-	                                        <input type="submit" name="search_table" id="search_table" value="Search" class="btn btn-primary">
-	                                    </div> -->
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="end_date">End Date:</label><input type="date" name="end_date" class="form-control" value="<?php if(isset($_GET['end_date'])) { echo htmlentities ($_GET['end_date']); }?>">
+                                            </div>
+                                        </div>
                                         <div class="input-group col-md-5" style="margin: 38px 0px 0px 0px;">
                                             <input type="text" name="search" class="form-control" placeholder="Search..." value="<?php if(isset($_GET['search'])) { echo htmlentities ($_GET['search']); }?>">
                                             <span class="input-group-btn">
@@ -364,9 +360,8 @@
                                                     <i class="fa fa-search"></i>
                                                 </button>
                                             </span>
-                                        </div>  
-
-	                                </div>
+                                        </div> 
+                                    </div>
                                     <div class="row">
                                         <div class="input-group col-md-5" style="margin: 5px 0px 0px 0px;">
                                             <div class="form-group">
@@ -382,10 +377,11 @@
                                             </div>
                                         </div>  
                                     </div>
-	                            </header>
-	                        </form>
-	                        <div class="table-responsive filterable">
+                                </header>
+                            </form>
+                            <div class="table-responsive filterable">
 <?php
+
     if(isset($_GET['search_table'])){
 
         $search_plant = $office;
@@ -397,11 +393,7 @@
         }
 
         if($_GET['search'] != ''){
-            $string_ext = " AND (o.purchase_order_no LIKE '%".$search_word."%' 
-                                OR o.item_no LIKE '%".$search_word."%' 
-                                OR s.site_name LIKE '%".$search_word."%' 
-                                OR s.site_address LIKE '%".$search_word."%'
-                                OR p.site_contact_name LIKE '%".$search_word."%') ";
+            $string_ext = " AND (o.purchase_order_no LIKE '%".$search_word."%' OR o.item_no LIKE '%".$search_word."%' OR s.site_name LIKE '%".$search_word."%' OR s.site_address LIKE '%".$search_word."%') ";
         }else{
             $string_ext = "";
         }
@@ -421,17 +413,21 @@
         if($_GET['start_date'] == '' && $_GET['end_date'] == ''){
             $string_date = "";
         }else if($_GET['start_date'] == '' && $_GET['end_date'] != ''){
-            $string_date = "AND DATE_FORMAT(date_purchase,'%Y-%m-%d') <= '$end_date'";
+            $string_date = "AND DATE_FORMAT(date_delivered,'%Y-%m-%d') <= '$end_date'";
         }else if($_GET['start_date'] != '' && $_GET['end_date'] == ''){
-            $string_date = "AND DATE_FORMAT(date_purchase,'%Y-%m-%d') >= '$start_date'";        
+            $string_date = "AND DATE_FORMAT(date_delivered,'%Y-%m-%d') >= '$start_date'";        
         }else{
-            $string_date = "AND DATE_FORMAT(date_purchase,'%Y-%m-%d') BETWEEN '$start_date' AND '$end_date'";
+            $string_date = "AND DATE_FORMAT(date_delivered,'%Y-%m-%d') BETWEEN '$start_date' AND '$end_date'";
         }
 ?>
-					<table class="table table-striped table-bordered">
+                    <table class="table table-striped table-bordered">
                         <thead>
                             <tr class="filterable">
-                                <th colspan="10">
+                                <th colspan="7"></th>
+                                <th colspan="2" style="text-align: center;">
+                                    <p>Date</p>
+                                </th>
+                                <th colspan="1">
                                     <button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="fa fa-filter"></span> Filter</button>
                                 </th>
                             </tr>
@@ -440,11 +436,11 @@
                                 <th class="col-md-1"><input type="text" class="form-control" placeholder="P.O. No." disabled></th>
                                 <th class="col-md-1"><input type="text" class="form-control" placeholder="Item" disabled></th>
                                 <th class="col-md-1">Quantity</th>
-                                <th class="col-md-1">Balance</th>
                                 <th><input type="text" class="form-control" placeholder="Site Name" disabled></th>
                                 <th class="col-md-2"><input type="text" class="form-control" placeholder="Address" disabled></th>
                                 <th class="col-md-1"><input type="text" class="form-control" placeholder="Contact" disabled></th>
-                                <th class="col-md-1">Date Order</th>
+                                <th class="col-md-1">Ordered</th>
+                                <th class="col-md-1">Delivered</th>
                                 <th class="col-md-1">Status</th>
                             </tr>
                         </thead>
@@ -452,20 +448,22 @@
 <?php
 
     $string = " WHERE office = '$search_plant'";
-    
+
     $sql = "SELECT * FROM purchase_order o, site s, purchase_order_contact c, site_contact_person p ".$string." 
-            AND o.site_id = s.site_id 
-            AND o.purchase_id = c.purchase_id 
-            AND c.site_contact_id = p.site_contact_person_id ".$string_date." ".$string_ext." 
-            AND balance != 0
+            AND o.purchase_id = c.purchase_id
+            AND c.site_contact_id = p.site_contact_person_id
+            AND o.site_id = s.site_id ".$string_date." ".$string_ext."  
+            AND date_delivered != '' 
+            AND delivered > 0
             GROUP BY o.purchase_id";
+
     // echo $sql;
 
     $sql_result = mysqli_query($db, $sql); 
     $total = mysqli_num_rows($sql_result);
 
     $adjacents = 3;
-    $targetpage = "plant_purchase_order.php"; //your file name
+    $targetpage = "plant_purchase_deliver_order.php"; //your file name
     $page = $_GET['page'];
 
     if($page){ 
@@ -548,34 +546,31 @@
         $pagination.= "</ul></div>\n"; 
     }
 
-    $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.office, o.remarks, l.unit, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase, o.psi
+    $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.cancelled, o.office, o.remarks, l.unit, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase, DATE_FORMAT(o.date_delivered,'%m/%d/%y') as date_delivered1, o.psi 
                 FROM purchase_order o, batch_list l, site_contact_person p, site s, purchase_order_contact c
                 ".$string." ".$string_date."
-                AND o.site_id = s.site_id
                 AND o.purchase_id = c.purchase_id
                 AND c.site_contact_id = p.site_contact_person_id
-                AND o.item_no = l.item_no 
-                AND o.balance != 0 ".$string_ext."
-                AND DATE_FORMAT(date_purchase,'%Y-%m-%d') != ''
-                GROUP BY purchase_id
-                ORDER BY date_purchase DESC LIMIT $start, $limit";
-// echo $query;
+                AND o.site_id = s.site_id
+                AND o.item_no = l.item_no ".$string_ext." 
+                AND date_delivered != ''
+                AND o.delivered > 0 
+                GROUP BY o.purchase_id
+                ORDER BY date_delivered DESC LIMIT $start, $limit";
+    // echo $query;
     $result = mysqli_query($db, $query);
     if(mysqli_num_rows($result) > 0){
         $hash = 1;
         while($row = mysqli_fetch_assoc($result)){
-            
-            // $date = date_create($row['date_purchase']);
-?>
+?>     
                             <tr>
                                 <td><?php echo $hash; ?></td>
                                 <td class="col-md-1"><strong><?php echo $row['purchase_order_no']; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo $row['item_no'] . " (" . $row['psi'] . " PSI)"; ?></strong></td>
-                                <td class="col-md-1"><strong><?php echo number_format((float)$row['quantity'])." pcs"; ?></strong></td>
-                                <td class="col-md-1"><strong><?php echo number_format((float)$row['balance'])." pcs"; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo number_format((float)$row['delivered'])." pcs"; ?></strong></td>
                                 <td><strong><?php echo $row['site_name']; ?></strong></td>
                                 <td class="col-md-2"><strong><?php echo $row['site_address']; ?></strong></td>
-                                <td class="col-md-1">
+                                <td class="col-md-1">     
 <?php
 
     $contact_sql = "SELECT DISTINCT p.site_contact_id, c.site_contact_name
@@ -597,9 +592,6 @@
 
             $contact_sql_row['site_contact_no'] = $no_sql_row['site_contact_no'];
 ?>
-                                        <!-- <tr style="border: none;">
-                                            <td style="border: none;"><strong><?php echo $contact_sql_row['site_contact_name'] . "<br> (" . $contact_sql_row['site_contact_no'] . ")"; ?></strong></td>
-                                        </tr> -->
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <strong><?php echo $contact_sql_row['site_contact_name'] . "<br> (" . $contact_sql_row['site_contact_no'] . ")"; ?></strong>
@@ -607,35 +599,33 @@
                                         </div>
 <?php
          } 
-?>
-                                        
-
-
-<?php
     }
 ?>
                                 </td>
                                 <td class="col-md-1"><strong><?php echo $row['date_purchase']; ?></strong></td>
-                                <td class="col-md-1"><strong><?php echo $row['remarks']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['date_delivered1']; ?></strong></td>
+                                <td class="col-md-1" style="background: green; color: white;">
+                                    <strong><?php echo "Delivered"; ?></strong>
+                                </td>
                             </tr>
 <?php
-        $hash++;
-        }
-    }else{
+            $hash++;
+            }
+        }else{
 ?>
                             <tr>
-                                <td colspan="10" style='min-height: 100%; background: white; text-align:center; 
+                                <td colspan="10" style='height: 100%; background: white; text-align:center; 
             vertical-align:middle;'><h4><p class='text-muted'>No data found</p></h4></td>
                             </tr>
 <?php
     }
-?>
+?>                
                         </tbody>
                     </table>
 <?php
-   	}else{
+    }else{
 
-   		$search_plant = $office;
+        $search_plant = $office;
 
         if($_GET['search'] == ''){
             $search_word = "";
@@ -644,11 +634,7 @@
         }
 
         if($_GET['search'] != ''){
-            $string_ext = " AND (o.purchase_order_no LIKE '%".$search_word."%' 
-                                OR o.item_no LIKE '%".$search_word."%' 
-                                OR s.site_name LIKE '%".$search_word."%' 
-                                OR s.site_address LIKE '%".$search_word."%'
-                                OR p.site_contact_name LIKE '%".$search_word."%') ";
+            $string_ext = " AND (o.purchase_order_no LIKE '%".$search_word."%' OR o.item_no LIKE '%".$search_word."%' OR s.site_name LIKE '%".$search_word."%' OR s.site_address LIKE '%".$search_word."%') ";
         }else{
             $string_ext = "";
         }
@@ -668,54 +654,57 @@
         if($_GET['start_date'] == '' && $_GET['end_date'] == ''){
             $string_date = "";
         }else if($_GET['start_date'] == '' && $_GET['end_date'] != ''){
-            $string_date = "AND DATE_FORMAT(date_purchase,'%Y-%m-%d') <= '$end_date'";
+            $string_date = "AND DATE_FORMAT(date_delivered,'%Y-%m-%d') <= '$end_date'";
         }else if($_GET['start_date'] != '' && $_GET['end_date'] == ''){
-            $string_date = "AND DATE_FORMAT(date_purchase,'%Y-%m-%d') >= '$start_date'";        
+            $string_date = "AND DATE_FORMAT(date_delivered,'%Y-%m-%d') >= '$start_date'";        
         }else{
-            $string_date = "AND DATE_FORMAT(date_purchase,'%Y-%m-%d') BETWEEN '$start_date' AND '$end_date'";
+            $string_date = "AND DATE_FORMAT(date_delivered,'%Y-%m-%d') BETWEEN '$start_date' AND '$end_date'";
         }
 ?>
-					<table class="table table-striped table-bordered">
+                    <table class="table table-striped table-bordered">
                         <thead>
                             <tr class="filterable">
-                                <th colspan="10">
+                                <th colspan="7"></th>
+                                <th colspan="2" style="text-align: center;">
+                                    <p>Date</p>
+                                </th>
+                                <th colspan="1">
                                     <button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="fa fa-filter"></span> Filter</button>
                                 </th>
                             </tr>
                             <tr class="filters">
-                                <th class="">#</th>
+                                <th>#</th>
                                 <th class="col-md-1"><input type="text" class="form-control" placeholder="P.O. No." disabled></th>
                                 <th class="col-md-1"><input type="text" class="form-control" placeholder="Item" disabled></th>
                                 <th class="col-md-1">Quantity</th>
-                                <th class="col-md-1">Balance</th>
                                 <th><input type="text" class="form-control" placeholder="Site Name" disabled></th>
                                 <th class="col-md-2"><input type="text" class="form-control" placeholder="Address" disabled></th>
                                 <th class="col-md-1"><input type="text" class="form-control" placeholder="Contact" disabled></th>
-                                <th class="col-md-1">Date Order</th>
+                                <th class="col-md-1">Ordered</th>
+                                <th class="col-md-1">Delivered</th>
                                 <th class="col-md-1">Status</th>
                             </tr>
                         </thead>
                         <tbody>
 <?php
-    if($office == 'head'){
-        $string = " WHERE office = '$search_plant'";
-    }else{
-        $string = " WHERE office = '$office'";
-    }
-    
+
+    $string = " WHERE office = '$search_plant'";
+
     $sql = "SELECT * FROM purchase_order o, site s, purchase_order_contact c, site_contact_person p ".$string." 
-            AND o.site_id = s.site_id 
-            AND o.purchase_id = c.purchase_id 
-            AND c.site_contact_id = p.site_contact_person_id ".$string_date." ".$string_ext." 
-            AND balance != 0
+            AND o.purchase_id = c.purchase_id
+            AND c.site_contact_id = p.site_contact_person_id
+            AND o.site_id = s.site_id ".$string_date." ".$string_ext."  
+            AND date_delivered != '' 
+            AND delivered > 0
             GROUP BY o.purchase_id";
+
     // echo $sql;
 
     $sql_result = mysqli_query($db, $sql); 
     $total = mysqli_num_rows($sql_result);
 
     $adjacents = 3;
-    $targetpage = "plant_purchase_order.php"; //your file name
+    $targetpage = "plant_purchase_deliver_order.php"; //your file name
     $page = $_GET['page'];
 
     if($page){ 
@@ -798,34 +787,31 @@
         $pagination.= "</ul></div>\n"; 
     }
 
-    $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.office, o.remarks, l.unit, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase, o.psi
+    $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.cancelled, o.office, o.remarks, l.unit, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase, DATE_FORMAT(o.date_delivered,'%m/%d/%y') as date_delivered1, o.psi 
                 FROM purchase_order o, batch_list l, site_contact_person p, site s, purchase_order_contact c
                 ".$string." ".$string_date."
-                AND o.site_id = s.site_id
                 AND o.purchase_id = c.purchase_id
                 AND c.site_contact_id = p.site_contact_person_id
-                AND o.item_no = l.item_no 
-                AND o.balance != 0 ".$string_ext."
-                AND DATE_FORMAT(date_purchase,'%Y-%m-%d') != ''
-                GROUP BY purchase_id
-                ORDER BY date_purchase DESC LIMIT $start, $limit";
-// echo $query;
+                AND o.site_id = s.site_id
+                AND o.item_no = l.item_no ".$string_ext." 
+                AND date_delivered != ''
+                AND o.delivered > 0 
+                GROUP BY o.purchase_id
+                ORDER BY date_delivered DESC LIMIT $start, $limit";
+    // echo $query;
     $result = mysqli_query($db, $query);
     if(mysqli_num_rows($result) > 0){
-        $hash = $start + 1;
+        $hash = 1;
         while($row = mysqli_fetch_assoc($result)){
-            
-            // $date = date_create($row['date_purchase']);
-?>
+?>     
                             <tr>
                                 <td><?php echo $hash; ?></td>
                                 <td class="col-md-1"><strong><?php echo $row['purchase_order_no']; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo $row['item_no'] . " (" . $row['psi'] . " PSI)"; ?></strong></td>
-                                <td class="col-md-1"><strong><?php echo number_format((float)$row['quantity'])." pcs"; ?></strong></td>
-                                <td class="col-md-1"><strong><?php echo number_format((float)$row['balance'])." pcs"; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo number_format((float)$row['delivered'])." pcs"; ?></strong></td>
                                 <td><strong><?php echo $row['site_name']; ?></strong></td>
                                 <td class="col-md-2"><strong><?php echo $row['site_address']; ?></strong></td>
-                                <td class="col-md-1">
+                                <td class="col-md-1">     
 <?php
 
     $contact_sql = "SELECT DISTINCT p.site_contact_id, c.site_contact_name
@@ -847,9 +833,6 @@
 
             $contact_sql_row['site_contact_no'] = $no_sql_row['site_contact_no'];
 ?>
-                                        <!-- <tr style="border: none;">
-                                            <td style="border: none;"><strong><?php echo $contact_sql_row['site_contact_name'] . "<br> (" . $contact_sql_row['site_contact_no'] . ")"; ?></strong></td>
-                                        </tr> -->
                                         <div class="row">
                                             <div class="col-md-12">
                                                 <strong><?php echo $contact_sql_row['site_contact_name'] . "<br> (" . $contact_sql_row['site_contact_no'] . ")"; ?></strong>
@@ -857,74 +840,38 @@
                                         </div>
 <?php
          } 
-?>
-                                        
-
-
-<?php
     }
 ?>
                                 </td>
                                 <td class="col-md-1"><strong><?php echo $row['date_purchase']; ?></strong></td>
-                                <td class="col-md-1"><strong><?php echo $row['remarks']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['date_delivered1']; ?></strong></td>
+                                <td class="col-md-1" style="background: green; color: white;">
+                                    <strong><?php echo "Delivered"; ?></strong>
+                                </td>
                             </tr>
 <?php
-        $hash++;
-        }
-    }else{
+            $hash++;
+            }
+        }else{
 ?>
                             <tr>
-                                <td colspan="10" style='min-height: 100%; background: white; text-align:center; 
+                                <td colspan="10" style='height: 100%; background: white; text-align:center; 
             vertical-align:middle;'><h4><p class='text-muted'>No data found</p></h4></td>
                             </tr>
 <?php
     }
-?>
+?>                
                         </tbody>
                     </table>
-
-
 <?php
-   	}
-?>
-
-	                        </div>
-	                    </section>
-	                </div>
-	            </div>
-	            <div class="row">
-                    <div class="col-md-4">
-                        <div class="table_row_count">
-<?php
-                        if(isset($hash)){
-                            echo "Showing " . ($start+1)  . " to " . ($start + $hash - $start - 1) . " of " . $total . " entries"; 
-                        }
-?>
-                        </div>
+    }
+?>                                
+                            </div>
+                        </section>
                     </div>
-                    <div class="col-md-4">
-                        <div class="table_page">
-<?php
-                        echo $pagination; 
-?>      
-                        </div>
-                    </div>
-                </div> 
-	        </section>
-            <div class="text-right">
-                <div class="credits">
-                    <!-- 
-                    All the links in the footer should remain intact. 
-                    You can delete the links only if you purchased the pro version.
-                    Licensing information: https://bootstrapmade.com/license/
-                    Purchase the pro version form: https://bootstrapmade.com/buy/?theme=NiceAdmin
-                    -->
-                    <a href="https://bootstrapmade.com/free-business-bootstrap-themes-website-templates/">Business Bootstrap Themes</a> by <a href="https://bootstrapmade.com/">BootstrapMade</a>
                 </div>
-            </div>
-        <!--main content end-->
+            </section>
         </section>
-        <!-- container section start -->
     </section>
 </body>
 </html>

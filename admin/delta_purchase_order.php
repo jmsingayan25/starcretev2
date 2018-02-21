@@ -405,7 +405,11 @@ session_start();
         }
 
         if($_GET['search'] != ''){
-            $string_ext = " AND (o.purchase_order_no LIKE '%".$search_word."%' OR o.item_no LIKE '%".$search_word."%' OR s.site_name LIKE '%".$search_word."%' OR s.site_address LIKE '%".$search_word."%') ";
+            $string_ext = " AND (o.purchase_order_no LIKE '%".$search_word."%' 
+                                OR o.item_no LIKE '%".$search_word."%' 
+                                OR s.site_name LIKE '%".$search_word."%' 
+                                OR s.site_address LIKE '%".$search_word."%'
+                                OR p.site_contact_name LIKE '%".$search_word."%') ";
         }else{
             $string_ext = "";
         }
@@ -446,9 +450,9 @@ session_start();
                                 <th class="col-md-1">Quantity</th>
                                 <th class="col-md-1">Balance</th>
                                 <th><input type="text" class="form-control" placeholder="Site Name" disabled></th>
-                                <th class="col-md-2">Address</th>
-                                <th>Contact</th>
-                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Date Order" disabled></th>
+                                <th class="col-md-2"><input type="text" class="form-control" placeholder="Address" disabled></th>
+                                <th><input type="text" class="form-control" placeholder="Contact" disabled></th>
+                                <th class="col-md-1">Date Order</th>
                                 <th class="col-md-1">Status</th>
                             </tr>
                         </thead>
@@ -457,7 +461,13 @@ session_start();
 
     $string = " WHERE office = '$search_plant'";
 
-    $sql = "SELECT * FROM purchase_order o, site s ".$string." AND o.site_id = s.site_id ".$string_ext." ".$string_date." AND balance != 0";
+    $sql = "SELECT * FROM purchase_order o, site s, site_contact_person p, purchase_order_contact c ".$string." 
+            AND o.purchase_id = c.purchase_id
+            AND c.site_contact_id = p.site_contact_person_id
+            AND o.site_id = s.site_id 
+            AND s.site_id = p.site_id ".$string_ext." ".$string_date." 
+            AND balance != 0
+            GROUP BY o.purchase_id";
     // echo $sql;
 
     $sql_result = mysqli_query($db, $sql); 
@@ -547,7 +557,7 @@ session_start();
         $pagination.= "</ul></div>\n"; 
     }
 
-    $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.office, o.remarks, l.unit, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase
+    $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.office, o.remarks, l.unit, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase, o.psi
                 FROM purchase_order o, purchase_order_contact c, batch_list l, site_contact_person p, site s
                 ".$string." ".$string_date."
                 AND o.site_id = s.site_id
@@ -567,17 +577,51 @@ session_start();
                             <tr>
                                 <td><?php echo $hash; ?></td>
                                 <td class="col-md-1"><strong><?php echo $row['purchase_order_no']; ?></strong></td>
-                                <td class="col-md-1"><strong><?php echo $row['item_no']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['item_no'] . " (" . $row['psi'] . " PSI)"; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo number_format((float)$row['quantity'])." pcs"; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo number_format((float)$row['balance'])." pcs"; ?></strong></td>
                                 <td><strong><?php echo $row['site_name']; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo $row['site_address']; ?></strong></td>
-                                <td><strong><?php echo $row['site_contact_name']; ?></strong></td>
+                                <td class="col-md-1">
+<?php
+
+    $contact_sql = "SELECT DISTINCT p.site_contact_id, c.site_contact_name
+                    FROM purchase_order_contact p, purchase_order d, site_contact_person c
+                    WHERE d.purchase_id = p.purchase_id
+                    AND p.site_contact_id = c.site_contact_person_id
+                    AND d.purchase_id = '".$row['purchase_id']."'
+                    ORDER BY c.site_contact_name";
+                    // echo $contact_sql;
+    $contact_sql_result = mysqli_query($db, $contact_sql);
+    while ($contact_sql_row = mysqli_fetch_assoc($contact_sql_result)) {
+
+        $no_sql = "SELECT GROUP_CONCAT(site_contact_no SEPARATOR ', ') as site_contact_no 
+                    FROM site_contact_number
+                    WHERE site_contact_person_id = '".$contact_sql_row['site_contact_id']."'";
+
+        $no_sql_result = mysqli_query($db, $no_sql);
+        while ($no_sql_row = mysqli_fetch_assoc($no_sql_result)) {
+
+            $contact_sql_row['site_contact_no'] = $no_sql_row['site_contact_no'];
+?>
+                                        <div class="row" style="margin-bottom: 2px;">
+                                            <div class="col-md-12">
+                                                <strong><?php echo $contact_sql_row['site_contact_name'] . "<br> (" . $contact_sql_row['site_contact_no'] . ")"; ?></strong>
+                                            </div>
+                                        </div>
+<?php
+         } 
+?>
+                                        
+
+
+<?php
+    }
+?>
+                                </td>
                                 <td class="col-md-1"><strong><?php echo $row['date_purchase']; ?></strong></td>
                                 <td class="col-md-1">
                                     <form action="delta_purchase_order.php" method="post">
-                                        <!-- <input type="hidden" name="post_purchase_id" value="<?php echo $row['purchase_id']; ?>"> -->
-                                        <!-- <input type="submit" value="Update Info" class="btn btn-warning btn-xs" style="margin-bottom: 5px;"> -->
                                         <button type="button" class="btn btn-warning btn-xs" style="margin-bottom: 5px;" data-toggle='modal' data-target='#purchaseOrderUpdateRow<?php echo $hash; ?>'>Update Info</button>
 
                                         <div class="modal fade" id="purchaseOrderUpdateRow<?php echo $hash;?>" role="dialog">
@@ -671,7 +715,11 @@ session_start();
         }
 
         if($_GET['search'] != ''){
-            $string_ext = " AND (o.purchase_order_no LIKE '%".$search_word."%' OR o.item_no LIKE '%".$search_word."%' OR s.site_name LIKE '%".$search_word."%' OR s.site_address LIKE '%".$search_word."%') ";
+            $string_ext = " AND (o.purchase_order_no LIKE '%".$search_word."%' 
+                                OR o.item_no LIKE '%".$search_word."%' 
+                                OR s.site_name LIKE '%".$search_word."%' 
+                                OR s.site_address LIKE '%".$search_word."%'
+                                OR p.site_contact_name LIKE '%".$search_word."%') ";
         }else{
             $string_ext = "";
         }
@@ -700,7 +748,6 @@ session_start();
 ?>
                     <table class="table table-striped table-bordered">
                         <thead>
-        
                             <tr class="filterable">
                                 <th colspan="10">
                                     <button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="fa fa-filter"></span> Filter</button>
@@ -713,9 +760,9 @@ session_start();
                                 <th class="col-md-1">Quantity</th>
                                 <th class="col-md-1">Balance</th>
                                 <th><input type="text" class="form-control" placeholder="Site Name" disabled></th>
-                                <th class="col-md-2">Address</th>
-                                <th>Contact</th>
-                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Date Order" disabled></th>
+                                <th class="col-md-2"><input type="text" class="form-control" placeholder="Address" disabled></th>
+                                <th><input type="text" class="form-control" placeholder="Contact" disabled></th>
+                                <th class="col-md-1">Date Order</th>
                                 <th class="col-md-1">Status</th>
                             </tr>
                         </thead>
@@ -724,7 +771,13 @@ session_start();
 
     $string = " WHERE office = '$search_plant'";
     
-    $sql = "SELECT * FROM purchase_order o, site s ".$string." AND o.site_id = s.site_id ".$string_ext." ".$string_date." AND balance != 0";
+    $sql = "SELECT * FROM purchase_order o, site s, site_contact_person p, purchase_order_contact c ".$string." 
+            AND o.purchase_id = c.purchase_id
+            AND c.site_contact_id = p.site_contact_person_id
+            AND o.site_id = s.site_id 
+            AND s.site_id = p.site_id ".$string_ext." ".$string_date." 
+            AND balance != 0
+            GROUP BY o.purchase_id";
     // echo $sql;
 
     $sql_result = mysqli_query($db, $sql); 
@@ -813,18 +866,8 @@ session_start();
             $pagination.= "";
         $pagination.= "</ul></div>\n"; 
     }
-
-    // $query = "SELECT o.purchase_id, o.purchase_order_no, s.site_name, o.item_no, CONCAT(FORMAT(o.quantity,0), ' ', l.unit) as quantity, o.delivered, o.backload, CONCAT(FORMAT(o.balance,0), ' ', l.unit) as balance, s.site_address, p.contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase, o.office, o.remarks
-    //              FROM purchase_order o, batch_list l, contact_person p, site s
-    //              ".$string." ".$string_date."
-    //              AND o.client_id = s.client_id
-    //              AND o.client_id = p.client_id
-    //              AND o.item_no = l.item_no 
-    //              AND o.balance != 0  
-    //              AND DATE_FORMAT(date_purchase,'%Y-%m-%d') != ''
-    //          ORDER BY o.purchase_id DESC LIMIT $start, $limit";
                 
-    $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.office, o.remarks, l.unit, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase
+    $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.office, o.remarks, l.unit, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase, o.psi
                 FROM purchase_order o, purchase_order_contact c, batch_list l, site_contact_person p, site s
                 ".$string." ".$string_date."
                 AND o.site_id = s.site_id
@@ -847,17 +890,51 @@ session_start();
                             <tr>
                                 <td><?php echo $hash; ?></td>
                                 <td class="col-md-1"><strong><?php echo $row['purchase_order_no']; ?></strong></td>
-                                <td class="col-md-1"><strong><?php echo $row['item_no']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['item_no'] . " (" . $row['psi'] . " PSI)"; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo number_format((float)$row['quantity'])." pcs"; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo number_format((float)$row['balance'])." pcs"; ?></strong></td>
                                 <td><strong><?php echo $row['site_name']; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo $row['site_address']; ?></strong></td>
-                                <td><strong><?php echo $row['site_contact_name']; ?></strong></td>
+                                <td class="col-md-1">
+<?php
+
+    $contact_sql = "SELECT DISTINCT p.site_contact_id, c.site_contact_name
+                    FROM purchase_order_contact p, purchase_order d, site_contact_person c
+                    WHERE d.purchase_id = p.purchase_id
+                    AND p.site_contact_id = c.site_contact_person_id
+                    AND d.purchase_id = '".$row['purchase_id']."'
+                    ORDER BY c.site_contact_name";
+                    // echo $contact_sql;
+    $contact_sql_result = mysqli_query($db, $contact_sql);
+    while ($contact_sql_row = mysqli_fetch_assoc($contact_sql_result)) {
+
+        $no_sql = "SELECT GROUP_CONCAT(site_contact_no SEPARATOR ', ') as site_contact_no 
+                    FROM site_contact_number
+                    WHERE site_contact_person_id = '".$contact_sql_row['site_contact_id']."'";
+
+        $no_sql_result = mysqli_query($db, $no_sql);
+        while ($no_sql_row = mysqli_fetch_assoc($no_sql_result)) {
+
+            $contact_sql_row['site_contact_no'] = $no_sql_row['site_contact_no'];
+?>
+                                        <div class="row" style="margin-bottom: 2px;">
+                                            <div class="col-md-12">
+                                                <strong><?php echo $contact_sql_row['site_contact_name'] . "<br> (" . $contact_sql_row['site_contact_no'] . ")"; ?></strong>
+                                            </div>
+                                        </div>
+<?php
+         } 
+?>
+                                        
+
+
+<?php
+    }
+?>
+                                </td>
                                 <td class="col-md-1"><strong><?php echo $row['date_purchase']; ?></strong></td>
                                 <td class="col-md-1">
                                     <form action="delta_purchase_order.php" method="post">
-                                        <!-- <input type="hidden" name="post_purchase_id" value="<?php echo $row['purchase_id']; ?>"> -->
-                                        <!-- <input type="submit" value="Update Info" class="btn btn-warning btn-xs" style="margin-bottom: 5px;"> -->
                                         <button type="button" class="btn btn-warning btn-xs" style="margin-bottom: 5px;" data-toggle='modal' data-target='#purchaseOrderUpdateRow<?php echo $hash; ?>'>Update Info</button>
 
                                         <div class="modal fade" id="purchaseOrderUpdateRow<?php echo $hash;?>" role="dialog">

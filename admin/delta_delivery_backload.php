@@ -340,8 +340,8 @@ session_start();
                     <h3 class="page-header"><a href="delta_delivery_backload.php"><i class="fa fa-building"></i> Delta Backloaded Order</a></h3>
                     <ol class="breadcrumb">
                         <li><i class="fa fa-building"></i>Delta</li>
-                        <li><i class="icon_document"></i><a href="delta_delivery_order.php">Delivery Order</a></li>
-                        <li><i class="fa fa-info-circle"></i><a href="delta_delivery_issue.php">No DR. No. <span class='badge'><?php echo countPendingPo($db, 'delta'); ?></span></a></li>
+                        <li><i class="icon_document"></i><a href="delta_delivery_order.php">Delivery Order <span class="badge"><?php echo getDeliveryCountOnDeliveryOffice($db, 'delta'); ?></span></a></li>
+                        <li><i class="fa fa-info-circle"></i><a href="delta_delivery_issue.php">Existing P.O. <span class='badge'><?php echo countPendingPo($db, 'delta'); ?></span></a></li>
                         <li><i class="fa fa-truck"></i><a href="delta_delivery_success.php">Delivered</a></li>
                         <li><i class="fa fa-reply"></i><a href="delta_delivery_backload.php" style="color: blue;">Backload</a></li>                             
                     </ol>
@@ -406,7 +406,12 @@ session_start();
         }
 
         if($_GET['search'] != ''){
-            $string_ext = " AND (d.delivery_receipt_no LIKE '%".$search_word."%' OR d.item_no LIKE '%".$search_word."%' OR d.po_no_delivery LIKE '%".$search_word."%' OR s.site_name LIKE '%".$search_word."%' OR s.site_address LIKE '%".$search_word."%') ";
+            $string_ext = " AND (d.delivery_receipt_no LIKE '%".$search_word."%' 
+                                OR d.item_no LIKE '%".$search_word."%' 
+                                OR d.po_no_delivery LIKE '%".$search_word."%' 
+                                OR s.site_name LIKE '%".$search_word."%' 
+                                OR s.site_address LIKE '%".$search_word."%'
+                                OR p.site_contact_name LIKE '%".$search_word."%') ";
         }else{
             $string_ext = "";
         }
@@ -436,7 +441,7 @@ session_start();
                     <table class="table table-striped table-bordered">
                         <thead>
                             <tr class="filterable">
-                                <th colspan="9">
+                                <th colspan="10">
                                     <button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="fa fa-filter"></span> Filter</button>
                                 </th>
                             </tr>
@@ -447,8 +452,9 @@ session_start();
                                 <th class="col-md-1"><input type="text" class="form-control" placeholder="Item" disabled></th>
                                 <th class="col-md-1">Quantity</th>
                                 <th><input type="text" class="form-control" placeholder="Site Name" disabled></th>
-                                <th class="col-md-2">Address</th>
-                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Date Backload" disabled></th>
+                                <th class="col-md-2"><input type="text" class="form-control" placeholder="Address" disabled></th>
+                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Contact" disabled></th>
+                                <th class="col-md-1">Date</th>
                                 <th class="col-md-1">Status</th>
                             </tr>
                         </thead>
@@ -457,8 +463,13 @@ session_start();
 
     $string = " WHERE office = '$search_plant'";
 
-    $sql = "SELECT * FROM delivery d, site s".$string." AND d.site_id = s.site_id ".$string_date." ".$string_ext."  AND remarks = 'Backload'
-        GROUP BY d.delivery_id";
+    $sql = "SELECT * FROM delivery d, site s, site_contact_person p ".$string." 
+            AND d.fk_po_id = poc.purchase_id
+            AND poc.site_contact_id = p.site_contact_person_id 
+            AND d.site_id = s.site_id 
+            AND s.site_id = p.site_id ".$string_date." ".$string_ext."  
+            AND remarks = 'Backload'
+            GROUP BY d.delivery_id";
     // echo $sql;
     $sql_result = mysqli_query($db, $sql); 
     $total = mysqli_num_rows($sql_result);
@@ -547,9 +558,11 @@ session_start();
         $pagination.= "</ul></div>\n"; 
     }
 
-    $query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, p.site_contact_name, c.client_name, GROUP_CONCAT(sc.site_contact_no SEPARATOR ', ') as site_contact_no
-                FROM delivery d, site s, site_contact_person p, client c, site_contact_number sc
+    $query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, p.site_contact_name, c.client_name, GROUP_CONCAT(sc.site_contact_no SEPARATOR ', ') as site_contact_no, d.psi
+                FROM delivery d, site s, site_contact_person p, client c, site_contact_number sc, purchase_order_contact poc
                 ".$string." ".$string_date."
+                AND d.fk_po_id = poc.purchase_id
+                AND poc.site_contact_id = p.site_contact_person_id 
                 AND s.client_id = c.client_id
                 AND p.site_contact_person_id = sc.site_contact_person_id
                 AND d.site_id = s.site_id
@@ -572,10 +585,42 @@ session_start();
                                         <strong><?php echo $row['po_no_delivery']; ?></strong>
                                     </div>
                                 </td>
-                                <td class="col-md-1"><strong><?php echo $row['item_no']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['item_no'] . " (" . $row['psi'] . " PSI)"; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo number_format((float)$row['quantity'])." pcs"; ?></strong></td>
                                 <td><strong><?php echo $row['site_name']; ?></strong></td>
                                 <td class="col-md-2"><strong><?php echo $row['site_address']; ?></strong></td>
+                                <td class="col-md-1">
+<?php
+
+    $contact_sql = "SELECT DISTINCT p.site_contact_id, c.site_contact_name
+                    FROM purchase_order_contact p, delivery d, site_contact_person c
+                    WHERE d.fk_po_id = p.purchase_id
+                    AND p.site_contact_id = c.site_contact_person_id
+                    AND d.fk_po_id = '".$row['fk_po_id']."'
+                    ORDER BY c.site_contact_name";
+                    // echo $contact_sql;
+    $contact_sql_result = mysqli_query($db, $contact_sql);
+    while ($contact_sql_row = mysqli_fetch_assoc($contact_sql_result)) {
+
+        $no_sql = "SELECT GROUP_CONCAT(site_contact_no SEPARATOR ', ') as site_contact_no 
+                    FROM site_contact_number
+                    WHERE site_contact_person_id = '".$contact_sql_row['site_contact_id']."'";
+
+        $no_sql_result = mysqli_query($db, $no_sql);
+        while ($no_sql_row = mysqli_fetch_assoc($no_sql_result)) {
+
+            $contact_sql_row['site_contact_no'] = $no_sql_row['site_contact_no'];
+?>
+                                        <div class="row" style="margin-bottom: 2px;">
+                                            <div class="col-md-12">
+                                                <strong><?php echo $contact_sql_row['site_contact_name'] . "<br> (" . $contact_sql_row['site_contact_no'] . ")"; ?></strong>
+                                            </div>
+                                        </div>
+<?php
+         } 
+    }
+?>
+                                </td>
                                 <td class="col-md-1"><strong><?php echo $row['date_delivery']; ?></strong></td>
                                 <td class="col-md-1" style="background-color: #e60000; color: white;"><strong><?php echo $row['remarks']; ?></strong></td>
                             </tr>
@@ -585,7 +630,7 @@ session_start();
     }else{
 ?>
                             <tr>        
-                                <td colspan="9" style='min-height: 100%; background: white;text-align:center; 
+                                <td colspan="10" style='min-height: 100%; background: white;text-align:center; 
     vertical-align:middle;'><h4><p class='text-muted'>No data found</p></h4></td>
                             </tr>
 <?php
@@ -603,7 +648,12 @@ session_start();
         }
 
         if($_GET['search'] != ''){
-            $string_ext = " AND (d.delivery_receipt_no LIKE '%".$search_word."%' OR d.item_no LIKE '%".$search_word."%' OR d.po_no_delivery LIKE '%".$search_word."%' OR s.site_name LIKE '%".$search_word."%' OR s.site_address LIKE '%".$search_word."%') ";
+            $string_ext = " AND (d.delivery_receipt_no LIKE '%".$search_word."%' 
+                                OR d.item_no LIKE '%".$search_word."%' 
+                                OR d.po_no_delivery LIKE '%".$search_word."%' 
+                                OR s.site_name LIKE '%".$search_word."%' 
+                                OR s.site_address LIKE '%".$search_word."%'
+                                OR p.site_contact_name LIKE '%".$search_word."%') ";
         }else{
             $string_ext = "";
         }
@@ -633,7 +683,7 @@ session_start();
                     <table class="table table-striped table-bordered">
                         <thead>
                             <tr class="filterable">
-                                <th colspan="9">
+                                <th colspan="10">
                                     <button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="fa fa-filter"></span> Filter</button>
                                 </th>
                             </tr>
@@ -644,8 +694,9 @@ session_start();
                                 <th class="col-md-1"><input type="text" class="form-control" placeholder="Item" disabled></th>
                                 <th class="col-md-1">Quantity</th>
                                 <th><input type="text" class="form-control" placeholder="Site Name" disabled></th>
-                                <th class="col-md-2">Address</th>
-                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Date Backload" disabled></th>
+                                <th class="col-md-2"><input type="text" class="form-control" placeholder="Address" disabled></th>
+                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Contact" disabled></th>
+                                <th class="col-md-1">Date</th>
                                 <th class="col-md-1">Status</th>
                             </tr>
                         </thead>
@@ -654,8 +705,13 @@ session_start();
 
     $string = " WHERE office = '$search_plant'";
 
-    $sql = "SELECT * FROM delivery d, site s".$string." AND d.site_id = s.site_id ".$string_date." ".$string_ext."  AND remarks = 'Backload'
-        GROUP BY d.delivery_id";
+    $sql = "SELECT * FROM delivery d, site s, site_contact_person p, purchase_order_contact poc ".$string." 
+            AND d.fk_po_id = poc.purchase_id
+            AND poc.site_contact_id = p.site_contact_person_id 
+            AND d.site_id = s.site_id 
+            AND s.site_id = p.site_id ".$string_date." ".$string_ext."  
+            AND remarks = 'Backload'
+            GROUP BY d.delivery_id";
     // echo $sql;
     $sql_result = mysqli_query($db, $sql); 
     $total = mysqli_num_rows($sql_result);
@@ -744,9 +800,11 @@ session_start();
         $pagination.= "</ul></div>\n"; 
     }
 
-    $query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, p.site_contact_name, c.client_name, GROUP_CONCAT(sc.site_contact_no SEPARATOR ', ') as site_contact_no
-                FROM delivery d, site s, site_contact_person p, client c, site_contact_number sc
+    $query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, p.site_contact_name, c.client_name, GROUP_CONCAT(sc.site_contact_no SEPARATOR ', ') as site_contact_no, d.psi
+                FROM delivery d, site s, site_contact_person p, client c, site_contact_number sc, purchase_order_contact poc
                 ".$string." ".$string_date."
+                AND d.fk_po_id = poc.purchase_id
+                AND poc.site_contact_id = p.site_contact_person_id 
                 AND s.client_id = c.client_id
                 AND p.site_contact_person_id = sc.site_contact_person_id
                 AND d.site_id = s.site_id
@@ -769,10 +827,42 @@ session_start();
                                         <strong><?php echo $row['po_no_delivery']; ?></strong>
                                     </div>
                                 </td>
-                                <td class="col-md-1"><strong><?php echo $row['item_no']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['item_no'] . " (" . $row['psi'] . " PSI)"; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo number_format((float)$row['quantity'])." pcs"; ?></strong></td>
                                 <td><strong><?php echo $row['site_name']; ?></strong></td>
                                 <td class="col-md-2"><strong><?php echo $row['site_address']; ?></strong></td>
+                                <td class="col-md-1">
+<?php
+
+    $contact_sql = "SELECT DISTINCT p.site_contact_id, c.site_contact_name
+                    FROM purchase_order_contact p, delivery d, site_contact_person c
+                    WHERE d.fk_po_id = p.purchase_id
+                    AND p.site_contact_id = c.site_contact_person_id
+                    AND d.fk_po_id = '".$row['fk_po_id']."'
+                    ORDER BY c.site_contact_name";
+                    // echo $contact_sql;
+    $contact_sql_result = mysqli_query($db, $contact_sql);
+    while ($contact_sql_row = mysqli_fetch_assoc($contact_sql_result)) {
+
+        $no_sql = "SELECT GROUP_CONCAT(site_contact_no SEPARATOR ', ') as site_contact_no 
+                    FROM site_contact_number
+                    WHERE site_contact_person_id = '".$contact_sql_row['site_contact_id']."'";
+
+        $no_sql_result = mysqli_query($db, $no_sql);
+        while ($no_sql_row = mysqli_fetch_assoc($no_sql_result)) {
+
+            $contact_sql_row['site_contact_no'] = $no_sql_row['site_contact_no'];
+?>
+                                        <div class="row" style="margin-bottom: 2px;">
+                                            <div class="col-md-12">
+                                                <strong><?php echo $contact_sql_row['site_contact_name'] . "<br> (" . $contact_sql_row['site_contact_no'] . ")"; ?></strong>
+                                            </div>
+                                        </div>
+<?php
+         } 
+    }
+?>
+                                </td>
                                 <td class="col-md-1"><strong><?php echo $row['date_delivery']; ?></strong></td>
                                 <td class="col-md-1" style="background-color: #e60000; color: white;"><strong><?php echo $row['remarks']; ?></strong></td>
                             </tr>
@@ -782,7 +872,7 @@ session_start();
     }else{
 ?>
                             <tr>        
-                                <td colspan="9" style='min-height: 100%; background: white;text-align:center; 
+                                <td colspan="10" style='min-height: 100%; background: white;text-align:center; 
     vertical-align:middle;'><h4><p class='text-muted'>No data found</p></h4></td>
                             </tr>
 <?php

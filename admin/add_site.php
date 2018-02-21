@@ -268,13 +268,13 @@
 										</header>
 										<div class="panel-body">
 											<div class="form-group">
-												<label for="site_name" class="col-md-4 control-label">Site Name: </label>
+												<label for="site_name" class="col-md-4 control-label">Site Name<span class="required" style="color: red;">*</span></label>
 												<div class="col-md-8">
 													<input type="text" name="site_name" class="form-control" required>
 												</div>
 											</div>
 											<div class="form-group">
-												<label for="site_address" class="col-md-4 control-label">Site Address: </label>
+												<label for="site_address" class="col-md-4 control-label">Site Address<span class="required" style="color: red;">*</span> </label>
 												<div class="col-md-8">
 													<input type="text" name="site_address" class="form-control" required>
 												</div>
@@ -305,10 +305,10 @@
 												<table id="item_table" align="center">
 													<tr>
 														<td class="col-md-4">
-															<label for="item_no">Name</label>
+															<label for="item_no">Name<span class="required" style="color: red;">*</span></label>
 														</td>
 														<td class="col-md-4">
-															<label for="quantity">Number</label>
+															<label for="quantity">Number<span class="required" style="color: red;">*</span></label>
 														</td>
 														<td class="col-md-4">
 															<label for="button"></label>
@@ -334,6 +334,10 @@
 												</table>
 											</div>
 										</div>
+										<footer class="panel-footer">
+											<p class="help-block"><span class="required" style="color: red;">*</span> - required</p>
+											<p class="help-block">Note: Put a comma between contact numbers</p>
+										</footer>
 									</section>
 								</div>
 							</div>
@@ -355,7 +359,7 @@
 		$site_name = mysqli_real_escape_string($db, $_POST['site_name']);
 		$site_address = mysqli_real_escape_string($db, $_POST['site_address']);
 		$contact_name = $_POST['contact_name'];
-		$contact_no = $_POST['contact_no'];
+		$contact_no = str_replace("-", "", $_POST['contact_no']);
 
 		$insert_site = "INSERT INTO site(site_name, site_address, client_id) VALUES('$site_name','$site_address',$client_id)";
 

@@ -155,13 +155,13 @@ session_start();
         // $count = $count + 1;                      
         $rowno=$("#item_table tr").length;
         $rowno=$rowno+1;
-        $("#item_table tr:last").after("<tr id='row"+$rowno+"' style='text-align: center;'><td class='col-md-4'><div class='form-group'><select id='item_no' name='item_no[]' class='form-control' required><option value=''>Select</option><?php
+        $("#item_table tr:last").after("<tr id='row"+$rowno+"' style='text-align: center;'><td class='col-md-1'><div class='form-group'><select id='item_no' name='item_no[]' class='form-control' required><option value=''>Select</option><?php
         $sql = "SELECT item_no FROM batch_list ORDER BY item_no ASC";
         $result = mysqli_query($db, $sql);
         foreach($result as $row){
         echo "<option value='" . $row['item_no'] . "'>" . $row['item_no'] . "</option>";
         }
-        ?></select></div></td><td class='col-md-4'><div class='form-group'><input type='text' id='quantity' name='quantity[]' class='form-control' placeholder='Quantity' required></div></td><td class='col-md-4'><div class='form-group'><input type='button' value='Remove' class='btn btn-primary btn-md' onclick=delete_row('row"+$rowno+"')></div></td></tr>");
+        ?></select></div></td><td class='col-md-1'><div class='form-group'><input type='text' id='psi' name='psi[]' class='form-control' autocomplete='off' placeholder='PSI' required></div></td><td class='col-md-1'><div class='form-group'><input type='text' id='quantity' name='quantity[]' class='form-control' placeholder='Quantity' required></div></td><td class='col-md-1'><div class='form-group'><input type='button' value='Remove' class='btn btn-primary btn-md' onclick=delete_row('row"+$rowno+"')></div></td></tr>");
 	}
 
 	function delete_row(rowno){
@@ -397,7 +397,7 @@ session_start();
 							</header>
 							<div class="panel-body">
 								<div class="form-group">
-									<label for="plant" class="col-md-4 control-label">Plant</label>
+									<label for="plant" class="col-md-4 control-label">Plant<span class="required" style="color: red;">*</span></label>
 									<div class="col-lg-8">
 										<label class="radio-inline">
 											<input type="radio" id="plant" name="plant" value="bravo" checked> Bravo
@@ -408,13 +408,13 @@ session_start();
 									</div>
 								</div>
 								<div class="form-group">
-									<label for="po_no" class="col-md-4 control-label">P.O. No.</label>
+									<label for="po_no" class="col-md-4 control-label">P.O. No.<span class="required" style="color: red;">*</span></label>
 									<div class="col-md-8">
 										<input type="text" id="po_no" name="po_no" class="form-control" autocomplete="off" required>
 									</div>
 								</div>
 								<div class="form-group">
-									<label for="client" class="col-md-4 control-label">Client Name</label>
+									<label for="client" class="col-md-4 control-label">Client Name<span class="required" style="color: red;">*</span></label>
 									<div class="col-md-8">
 										<select id="client" name="client" class="form-control" style="width: 100%;" onchange="siteName(this.value);" required>
 											<option value="">Select</option>
@@ -429,7 +429,7 @@ session_start();
 									</div>
 								</div>
 								<div class="form-group">
-									<label for="site_id" class="col-md-4 control-label">Site Name / Site Address</label>
+									<label for="site_id" class="col-md-4 control-label">Site Name / Site Address<span class="required" style="color: red;">*</span></label>
 									<div class="col-md-8">
 										<select id="site_id" name="site_id" class="form-control" onchange="contactPerson(this.value); displayContactNumber(this.value);" required>
 											<option value="">Select</option>
@@ -437,7 +437,7 @@ session_start();
 									</div>
 								</div>
 								<div id="site_contact_field" class="form-group" style="display: none;">
-									<label for="contact_name" class="col-md-4 control-label">Contact Person</label>
+									<label for="contact_name" class="col-md-4 control-label">Contact Person<span class="required" style="color: red;">*</span></label>
                                     <table id="contact_table">
                                         <tr id="row_contact_1">
                                             <td class="col-md-8">
@@ -479,21 +479,24 @@ session_start();
 							Items
 							</header>
 							<div class="panel-body">
-								<div class="row">
+								<div class="row" style="margin: 5px;">
 									<table id="item_table" align="center">
 										<tr>
-											<td class="col-md-4">
-												<label for="item_no">Item</label>
+											<td class="col-md-1">
+												<label for="item_no">Item<span class="required" style="color: red;">*</span></label>
 											</td>
-											<td class="col-md-4">
-												<label for="quantity">Quantity</label>
+                                            <td class="col-md-1">
+                                                <label for="psi">PSI</label>
+                                            </td>
+											<td class="col-md-1">
+												<label for="quantity">Quantity<span class="required" style="color: red;">*</span></label>
 											</td>
-											<td class="col-md-4">
+											<td class="col-md-1">
 												<label for="button"></label>
 											</td>
 										</tr>
 										<tr id="row1" style="text-align: center;">
-											<td class="col-md-4">
+											<td class="col-md-1">
 												<div class="form-group">
 													<select id="item_no" name="item_no[]" class="form-control" required>
 														<option value="">Select</option>
@@ -507,20 +510,28 @@ session_start();
 													</select>
 												</div>
 											</td>
-											<td class="col-md-4">
+                                            <td class="col-md-1">
+                                                <div class="form-group">
+                                                    <input type="text" id="psi" name="psi[]" class="form-control" autocomplete="off" placeholder="PSI" required>
+                                                </div>
+                                            </td>
+											<td class="col-md-1">
 												<div class="form-group">
 													<input type="text" id="quantity" name="quantity[]" class="form-control" autocomplete="off" placeholder="Quantity" required>
 												</div>
 											</td>
-											<td class="col-md-4">
+											<td class="col-md-1">
 												<div class="form-group">
-													<input type="button" onclick="add_row();" class='btn btn-primary btn-md' autocomplete="off" value="Add Item">
+													<input type="button" onclick="add_row();" class='btn btn-primary btn-md' autocomplete="off" value="Add">
 												</div>
 											</td>
 										</tr>
 									</table>
 								</div>
 							</div>
+                            <footer class="panel-footer">
+                                <p class="help-block"><span class="required" style="color: red;">*</span> - required</p>
+                            </footer>
 						</section>
 					</div>
 				</div>
@@ -564,6 +575,7 @@ session_start();
 
 		$po_no = mysqli_real_escape_string($db, $_POST['po_no']);
 		$item = $_POST['item_no'];
+        $psi = $_POST['psi'];
 		$quantity = str_replace( ',', '', $_POST['quantity']);
 		$datetime = date("Y/m/d H:i:s");
 		
@@ -575,9 +587,9 @@ session_start();
 		$count = 0;
 		for($i = 0; $i < count($item); $i++){
 			if($item[$i] != "" && $quantity[$i] != ""){
-				$insert_purchase_order = "INSERT INTO purchase_order(purchase_unique_id, purchase_order_no, site_id, item_no, quantity, balance, date_purchase, office, remarks) VALUES('$purchase_unique_id','$po_no','$site_id','$item[$i]','$quantity[$i]','$quantity[$i]','$datetime','$plant','Pending')";
+				$insert_purchase_order = "INSERT INTO purchase_order(purchase_unique_id, purchase_order_no, site_id, item_no, psi, quantity, balance, date_purchase, office, remarks) VALUES('$purchase_unique_id','$po_no','$site_id','$item[$i]', '$psi[$i]','$quantity[$i]','$quantity[$i]','$datetime','$plant','Pending')";
 
-				$history_query = "INSERT INTO history(table_report, transaction_type, item_no, detail, history_date, office) VALUES('Purchase Order','Issued P.O. No.','$item[$i]','$client_name ordered ".number_format($quantity[$i])." pcs of $item[$i] with P.O. No. $po_no from ".ucfirst($plant)." to be delivered to $site_name','$datetime','$plant')";
+				$history_query = "INSERT INTO history(table_report, transaction_type, item_no, detail, history_date, office) VALUES('Purchase Order','Issued P.O. No.','$item[$i]','$client_name ordered ".number_format($quantity[$i])." pcs of $item[$i] ($psi[$i] PSI) with P.O. No. $po_no from ".ucfirst($plant)." to be delivered to $site_name','$datetime','$plant')";
 
 				// echo $insert_purchase_order."<br>";
 				// echo $history_query."<br>";

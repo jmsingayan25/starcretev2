@@ -370,10 +370,10 @@
                                             <div class="form-group">
                                                 <label for="search">Plant:</label>
                                                 <label class="radio-inline">
-                                                    <input type="radio" name="radioOffice" value="bravo" <?php if(isset($_GET['radioOffice']) && $_GET['radioOffice'] == 'bravo') { echo "checked"; }?> checked>Bravo
+                                                    <input type="radio" name="radioOffice" value="bravo" <?php if(isset($_GET['radioOffice']) && $_GET['radioOffice'] == 'bravo') { echo "checked"; }?> onchange="this.form.submit()" checked>Bravo
                                                 </label>
                                                 <label class="radio-inline">
-                                                    <input type="radio" name="radioOffice" value="delta" <?php if(isset($_GET['radioOffice']) && $_GET['radioOffice'] == 'delta') { echo "checked"; }?>>Delta
+                                                    <input type="radio" name="radioOffice" value="delta" <?php if(isset($_GET['radioOffice']) && $_GET['radioOffice'] == 'delta') { echo "checked"; }?> onchange="this.form.submit()" >Delta
                                                 </label>
                                             </div>
                                         </div>
@@ -465,8 +465,8 @@
                                <table class="table table-striped table-bordered" id="myTable">
                                     <thead>
                                         <tr class="filterable">
-                                            <th colspan="2"></th>
-                                            <th colspan="1">
+            
+                                            <th colspan="3">
                                                 <button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="fa fa-filter"></span> Filter</button>
                                             </th>
                                         </tr>
@@ -665,8 +665,7 @@
                 <table class="table table-striped table-bordered" id="myTable">
                     <thead>
                         <tr class="filterable">
-                            <th colspan="2"></th>
-                            <th colspan="1">
+                            <th colspan="3">
                                 <button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="fa fa-filter"></span> Filter</button>
                             </th>
                         </tr>

@@ -161,13 +161,14 @@
 
 	function compareValues(input) {
 		
-		var number = Number(input);
+		var number = input.replace(",","");
+        number = Number(number);
 		var balance = Number(document.getElementById('hidden_quantity').value);
 		var submit = document.getElementById('submit');
 		// var letters = /^[0-9a-zA-Z]+$/; 
 
 		setTimeout(function () {
-			if(number > balance || isNaN(number) || number <= 0){
+			if(number > balance || number <= 0){
 				submit.disabled = true;
 				// a.style.display = "block";
 			}else{
@@ -256,8 +257,8 @@
 	                        <span class="menu-arrow arrow_carrot-right"></span>
 	                    </a>
 	                    <ul class="sub">
-	                    	<li><a class="" href="plant_delivery_issue.php">No DR. No. <span class='badge'><?php echo getCountPlantPo($db, $office); ?></span></a></li>       
-	                        <li><a class="" href="plant_delivery_order.php">On Delivery Order</a></li>          
+	                    	<li><a class="" href="plant_delivery_issue.php">Existing P.O. <span class='badge'><?php echo getCountPlantPo($db, $office); ?></span></a></li>       
+	                        <li><a class="" href="plant_delivery_order.php">On Delivery Order <span class="badge"><?php echo getDeliveryCountOnDeliveryOffice($db, $office); ?></span></a></li>        
 	                        <li><a class="" href="plant_delivery_delivered.php">Delivered Order</a></li>
 	                        <li><a class="" href="plant_delivery_backloaded.php">Backloaded Order</a></li>
 	                    </ul>
@@ -275,10 +276,10 @@
 	            <!--overview start-->
 	            <div class="row">
 	                <div class="col-md-12 page_links">
-	                    <h3 class="page-header"><i class="fa fa-file"></i><a href="plant_delivery_issue_form.php">Issue Form</a></h3>
+	                    <!-- <h3 class="page-header"><i class="fa fa-file"></i><a href="plant_delivery_issue_form.php">Issue Form</a></h3> -->
 	                    <ol class="breadcrumb">
 	                        <li><i class="fa fa-building"></i>Delivery Order</li>
-	                        <li><i class="fa fa-exclamation-circle"></i><a href="plant_delivery_issue.php">No DR. No.</a></li>	
+	                        <li><i class="fa fa-exclamation-circle"></i><a href="plant_delivery_issue.php">Existing P.O.</a></li>	
 	                        <li><i class="fa fa-file"></i><a href="plant_delivery_issue_form.php" style="color: blue;">Issue Form</a></li>						  	
 	                    </ol>
 	                </div>
@@ -296,32 +297,32 @@
 								<form class="form-horizontal" role="form" id="form" action="plant_delivery_issue_form.php" method="post" onsubmit="return confirm('Proceed?');">
 									<input type="hidden" id="hidden_quantity" value="<?php echo $purchase_row['balance'] ?>">
 									<div class="form-group">
-										<label for="po_no" class="col-md-2 control-label">P.O. No.</label>
+										<label for="po_no" class="col-md-3 control-label">P.O. No.</label>
 										<div class="col-md-6">
-											<input type="text" id="po_no" name="po_no" value="<?php echo $purchase_row['purchase_order_no']; ?>" class="form-control" readonly>
+                                            <p class="help-block"><?php echo $purchase_row['purchase_order_no']; ?> </p>
 										</div>
 									</div>
 									<div class="form-group">
-										<label for="item_no" class="col-md-2 control-label">Item No.</label>
+										<label for="item_no" class="col-md-3 control-label">Item No.</label>
 										<div class="col-md-6">
-											<input type="text" id="item_no" name="item_no" value="<?php echo $purchase_row['item_no']; ?>" class="form-control" readonly>
+                                            <p class="help-block"><?php echo $purchase_row['item_no'] . " (" . $purchase_row['psi'] . " PSI)"; ?> </p>
 										</div>
 									</div>
 									<div class="form-group">
-										<label for="dr_no" class="col-md-2 control-label">DR No.</label>
+										<label for="dr_no" class="col-md-3 control-label">DR No.<span class="required" style="color: red;">*</span></label>
 										<div class="col-md-6">
 											<input type="text" id="dr_no" name="dr_no" class="form-control" autocomplete="off" required>
 										</div>
 									</div>
 									<div class="form-group">
-										<label for="dr_no" class="col-md-2 control-label">Quantity</label>
+										<label for="dr_no" class="col-md-3 control-label">Quantity<span class="required" style="color: red;">*</span></label>
 										<div class="col-md-6">
 											<input type="text" id="quantity" name="quantity" class="class_quantity form-control" autocomplete="off" placeholder="Pieces to be delivered" onkeyup="compareValues(this.value)" required>
 											<p class="help-block">Balance: <?php echo number_format((float)$purchase_row['balance'])." pcs"; ?></p>
 										</div>
 									</div>
 									<div class="form-group">
-										<label for="gate_pass_no" class="col-md-2 control-label">Gate Pass</label>
+										<label for="gate_pass_no" class="col-md-3 control-label">Gate Pass<span class="required" style="color: red;">*</span></label>
 										<div class="col-md-6">
 											<input type="text" id="gate_pass_no" name="gate_pass_no" class="form-control" autocomplete="off" required>
 										</div>
@@ -334,6 +335,9 @@
 									</div>
 								</form>
 							</div>
+                            <footer class="panel-footer">
+                                <p class="help-block"><span class="required" style="color: red;">*</span> - required</p>
+                            </footer>
 						</section>
 					</div>
 				</div>
@@ -362,6 +366,7 @@
 		$site_name = $purchase_row['site_name'];
 		$delivery_no = mysqli_real_escape_string($db, $_POST['dr_no']);
 		$item_no = $purchase_row['item_no'];
+        $psi = $purchase_row['psi'];
 		$quantity = str_replace( ',', '', $_POST['quantity']);
 		$site_id = $purchase_row['site_id'];
 		$contact = $purchase_row['site_contact_person_id'];
@@ -372,11 +377,11 @@
 		$plant = ucfirst($purchase_row['office']);
 
 
-		$delivery_insert = "INSERT INTO delivery(delivery_receipt_no, item_no, quantity, site_id, gate_pass, po_no_delivery, date_delivery, office, remarks, fk_po_id) 
-							VALUES('$delivery_no','$item_no','$quantity','$site_id','$gate_pass_no','$po_no','$datetime','$office','On Delivery','$purchase_id')";
+		$delivery_insert = "INSERT INTO delivery(delivery_receipt_no, item_no, psi, quantity, site_id, gate_pass, po_no_delivery, date_delivery, office, remarks, fk_po_id) 
+							VALUES('$delivery_no','$item_no', '$psi','$quantity','$site_id','$gate_pass_no','$po_no','$datetime','$office','On Delivery','$purchase_id')";
 
 		$history_query = "INSERT INTO history(table_report, transaction_type, detail, history_date, office) 
-		 					VALUES('Delivery','Issued DR No.','Issued DR No. $delivery_no with P.O. No. $po_no and ".$_POST['quantity']." pcs of $item_no and ready to deliver to $site_name','$datetime','$office')";
+		 					VALUES('Delivery','Issued DR No.','Issued DR No. $delivery_no with P.O. No. $po_no and ".$_POST['quantity']." pcs of $item_no ($psi PSI) and ready to deliver to $site_name','$datetime','$office')";
 
 		$purchase_order_update = "UPDATE purchase_order SET balance = balance - '$quantity'
 									WHERE purchase_id = '$purchase_id'";

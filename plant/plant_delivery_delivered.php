@@ -310,8 +310,8 @@
 	                        <span class="menu-arrow arrow_carrot-right"></span>
 	                    </a>
 	                    <ul class="sub">
-	                    	<li><a class="" href="plant_delivery_issue.php">No DR. No. <span class='badge'><?php echo getCountPlantPo($db, $office); ?></span></a></li>       
-	                        <li><a class="" href="plant_delivery_order.php">On Delivery Order</a></li>                 
+	                    	<li><a class="" href="plant_delivery_issue.php">Existing P.O. <span class='badge'><?php echo getCountPlantPo($db, $office); ?></span></a></li>       
+	                        <li><a class="" href="plant_delivery_order.php">On Delivery Order <span class="badge"><?php echo getDeliveryCountOnDeliveryOffice($db, $office); ?></span></a></li>              
 	                        <li><a class="" href="plant_delivery_delivered.php">Delivered Order</a></li>
 	                        <li><a class="" href="plant_delivery_backloaded.php">Backloaded Order</a></li>
 	                    </ul>
@@ -397,7 +397,12 @@
         }
 
         if($_GET['search'] != ''){
-            $string_ext = " AND (d.delivery_receipt_no LIKE '%".$search_word."%' OR d.item_no LIKE '%".$search_word."%' OR d.po_no_delivery LIKE '%".$search_word."%' OR s.site_name LIKE '%".$search_word."%' OR s.site_address LIKE '%".$search_word."%') ";
+            $string_ext = " AND (d.delivery_receipt_no LIKE '%".$search_word."%' 
+                                OR d.item_no LIKE '%".$search_word."%' 
+                                OR d.po_no_delivery LIKE '%".$search_word."%' 
+                                OR s.site_name LIKE '%".$search_word."%' 
+                                OR s.site_address LIKE '%".$search_word."%'
+                                OR p.site_contact_name LIKE '%".$search_word."%') ";
         }else{
             $string_ext = "";
         }
@@ -438,9 +443,9 @@
 		                        <th class="col-md-1"><input type="text" class="form-control" placeholder="Item" disabled></th>
 		                        <th class="col-md-1">Quantity</th>
 		                        <th><input type="text" class="form-control" placeholder="Site Name" disabled></th>
-		                        <th>Address</th>
-                                <th class="col-md-1">Contact</th>
-		                        <th class="col-md-1"><input type="text" class="form-control" placeholder="Date Deliver" disabled></th>
+		                        <th><input type="text" class="form-control" placeholder="Address" disabled></th>
+                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Contact" disabled></th>
+		                        <th class="col-md-1">Date</th>
 		                        <th class="col-md-1">Status</th>
 							</tr>
 						</thead>
@@ -449,8 +454,12 @@
 		
 	$string = " WHERE office = '$search_plant'";
 
-	$sql = "SELECT * FROM delivery d, site s ".$string." AND d.site_id = s.site_id ".$string_date." ".$string_ext."AND remarks = 'Delivered'
-        GROUP BY d.delivery_id";
+	$sql = "SELECT * FROM delivery d, site s, site_contact_person p, purchase_order_contact pc ".$string." 
+            AND d.fk_po_id = pc.purchase_id
+            AND pc.site_contact_id = p.site_contact_person_id
+            AND d.site_id = s.site_id ".$string_date." ".$string_ext."
+            AND remarks = 'Delivered'
+            GROUP BY d.delivery_id";
 
 	$sql_result = mysqli_query($db, $sql); 
 	$total = mysqli_num_rows($sql_result);
@@ -546,7 +555,7 @@
 	// 		ORDER BY date_delivery DESC
 	// 		LIMIT $start, $limit";
 
-	$query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery1 , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, c.client_name, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name SEPARATOR ', ') as site_contact_name
+	$query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery1 , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, c.client_name, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name SEPARATOR ', ') as site_contact_name, d.psi
 			FROM delivery d, site s, site_contact_person p, client c, site_contact_number sc, purchase_order_contact pc
 			".$string." ".$string_date."
 			AND s.client_id = c.client_id
@@ -556,7 +565,7 @@
 			AND d.site_id = s.site_id ".$string_ext."
 			AND remarks = 'Delivered' 
 			GROUP BY delivery_id 
-			ORDER BY delivery_id DESC
+			ORDER BY date_delivery1 DESC
 			LIMIT $start, $limit";
 				// echo $query;
 	$result = mysqli_query($db, $query);
@@ -573,12 +582,49 @@
                                         <strong><?php echo $row['po_no_delivery']; ?></strong>
                                     </div>
                                 </td>
-								<td class="col-md-1"><strong><?php echo $row['item_no']; ?></strong></td>
+								<td class="col-md-1"><strong><?php echo $row['item_no'] . " (" . $row['psi'] . " PSI)"; ?></strong></td>
 								<td class="col-md-1"><strong><?php echo number_format((float)$row['quantity'])." pcs"; ?></strong></td>
 								<td><strong><?php echo $row['site_name']; ?></strong></td>
 								<td><strong><?php echo $row['site_address']; ?></strong></td>
+								<td class="col-md-1">
+                                    
+<?php
+
+    $contact_sql = "SELECT DISTINCT p.site_contact_id, c.site_contact_name
+                    FROM purchase_order_contact p, delivery d, site_contact_person c
+                    WHERE d.fk_po_id = p.purchase_id
+                    AND p.site_contact_id = c.site_contact_person_id
+                    AND d.fk_po_id = '".$row['fk_po_id']."'
+                    ORDER BY c.site_contact_name";
+                    // echo $contact_sql;
+    $contact_sql_result = mysqli_query($db, $contact_sql);
+    while ($contact_sql_row = mysqli_fetch_assoc($contact_sql_result)) {
+
+        $no_sql = "SELECT GROUP_CONCAT(site_contact_no SEPARATOR ', ') as site_contact_no 
+                    FROM site_contact_number
+                    WHERE site_contact_person_id = '".$contact_sql_row['site_contact_id']."'";
+
+        $no_sql_result = mysqli_query($db, $no_sql);
+        while ($no_sql_row = mysqli_fetch_assoc($no_sql_result)) {
+
+            $contact_sql_row['site_contact_no'] = $no_sql_row['site_contact_no'];
+?>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <strong><?php echo $contact_sql_row['site_contact_name'] . "<br> (" . $contact_sql_row['site_contact_no'] . ")"; ?></strong>
+                                            </div>
+                                        </div>
+<?php
+         } 
+?>
+                                        
+
+
+<?php
+    }
+?>
+                                </td>
                                 <td class="col-md-1"><strong><?php echo $row['date_delivery1']; ?></strong></td>
-								<td class="col-md-1"><strong><?php echo $row['site_contact_name']; ?></strong></td>
 								<td class="col-md-1" style="background-color: green; color: white"><strong><?php echo $row['remarks']; ?></strong></td>
 							</tr>
 <?php
@@ -607,7 +653,12 @@
         }
 
         if($_GET['search'] != ''){
-            $string_ext = " AND (d.delivery_receipt_no LIKE '%".$search_word."%' OR d.item_no LIKE '%".$search_word."%' OR d.po_no_delivery LIKE '%".$search_word."%' OR s.site_name LIKE '%".$search_word."%' OR s.site_address LIKE '%".$search_word."%') ";
+            $string_ext = " AND (d.delivery_receipt_no LIKE '%".$search_word."%' 
+                                OR d.item_no LIKE '%".$search_word."%' 
+                                OR d.po_no_delivery LIKE '%".$search_word."%' 
+                                OR s.site_name LIKE '%".$search_word."%' 
+                                OR s.site_address LIKE '%".$search_word."%'
+                                OR p.site_contact_name LIKE '%".$search_word."%') ";
         }else{
             $string_ext = "";
         }
@@ -651,9 +702,9 @@
                                 <th class="col-md-1"><input type="text" class="form-control" placeholder="Item" disabled></th>
                                 <th class="col-md-1">Quantity</th>
                                 <th><input type="text" class="form-control" placeholder="Site Name" disabled></th>
-                                <th>Address</th>
-                                <th class="col-md-1">Contact</th>
-                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Date Deliver" disabled></th>
+                                <th><input type="text" class="form-control" placeholder="Address" disabled></th>
+                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Contact" disabled></th>
+                                <th class="col-md-1">Date</th>
                                 <th class="col-md-1">Status</th>
 							</tr>
 						</thead>
@@ -662,7 +713,11 @@
 		
 		$string = " WHERE office = '$search_plant'";
 
-		$sql = "SELECT * FROM delivery d, site s ".$string." AND d.site_id = s.site_id ".$string_date." ".$string_ext."AND remarks = 'Delivered'
+		$sql = "SELECT * FROM delivery d, site s, site_contact_person p, purchase_order_contact pc ".$string." 
+            AND d.fk_po_id = pc.purchase_id
+            AND pc.site_contact_id = p.site_contact_person_id
+            AND d.site_id = s.site_id ".$string_date." ".$string_ext."
+            AND remarks = 'Delivered'
             GROUP BY d.delivery_id";
 
 		$sql_result = mysqli_query($db, $sql); 
@@ -759,7 +814,7 @@
 		// 		ORDER BY date_delivery DESC
 		// 		LIMIT $start, $limit";
 
-		$query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery1 , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, c.client_name, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name SEPARATOR ', ') as site_contact_name
+		$query = "SELECT d.delivery_id, d.delivery_receipt_no, d.item_no, d.quantity, d.gate_pass, d.po_no_delivery, DATE_FORMAT(d.date_delivery,'%m/%d/%y') as date_delivery1 , d.office, d.remarks, d.fk_po_id, s.site_name, s.site_address, c.client_name, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name SEPARATOR ', ') as site_contact_name, d.psi
                 FROM delivery d, site s, site_contact_person p, client c, site_contact_number sc, purchase_order_contact pc
                 ".$string." ".$string_date."
                 AND s.client_id = c.client_id
@@ -769,7 +824,7 @@
                 AND d.site_id = s.site_id ".$string_ext."
                 AND remarks = 'Delivered' 
                 GROUP BY delivery_id 
-                ORDER BY delivery_id DESC
+                ORDER BY date_delivery1 DESC
                 LIMIT $start, $limit";
 					// echo $query;
 		$result = mysqli_query($db, $query);
@@ -786,12 +841,49 @@
                                         <strong><?php echo $row['po_no_delivery']; ?></strong>
                                     </div>
                                 </td>
-                                <td class="col-md-1"><strong><?php echo $row['item_no']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['item_no'] . " (" . $row['psi'] . " PSI)"; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo number_format((float)$row['quantity'])." pcs"; ?></strong></td>
                                 <td><strong><?php echo $row['site_name']; ?></strong></td>
                                 <td><strong><?php echo $row['site_address']; ?></strong></td>
+                                <td class="col-md-1">
+                                    
+<?php
+
+    $contact_sql = "SELECT DISTINCT p.site_contact_id, c.site_contact_name
+                    FROM purchase_order_contact p, delivery d, site_contact_person c
+                    WHERE d.fk_po_id = p.purchase_id
+                    AND p.site_contact_id = c.site_contact_person_id
+                    AND d.fk_po_id = '".$row['fk_po_id']."'
+                    ORDER BY c.site_contact_name";
+                    // echo $contact_sql;
+    $contact_sql_result = mysqli_query($db, $contact_sql);
+    while ($contact_sql_row = mysqli_fetch_assoc($contact_sql_result)) {
+
+        $no_sql = "SELECT GROUP_CONCAT(site_contact_no SEPARATOR ', ') as site_contact_no 
+                    FROM site_contact_number
+                    WHERE site_contact_person_id = '".$contact_sql_row['site_contact_id']."'";
+
+        $no_sql_result = mysqli_query($db, $no_sql);
+        while ($no_sql_row = mysqli_fetch_assoc($no_sql_result)) {
+
+            $contact_sql_row['site_contact_no'] = $no_sql_row['site_contact_no'];
+?>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <strong><?php echo $contact_sql_row['site_contact_name'] . "<br> (" . $contact_sql_row['site_contact_no'] . ")"; ?></strong>
+                                            </div>
+                                        </div>
+<?php
+         } 
+?>
+                                        
+
+
+<?php
+    }
+?>
+                                </td>
                                 <td class="col-md-1"><strong><?php echo $row['date_delivery1']; ?></strong></td>
-                                <td class="col-md-1"><strong><?php echo $row['site_contact_name']; ?></strong></td>
                                 <td class="col-md-1" style="background-color: green; color: white"><strong><?php echo $row['remarks']; ?></strong></td>
 							</tr>
 <?php

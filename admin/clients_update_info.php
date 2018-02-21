@@ -220,8 +220,8 @@
                     <h3 class="page-header"><i class="fa fa-laptop"></i> <?php echo $client_name; ?></h3>
                     <ol class="breadcrumb">
                         <!-- <li><i class="fa fa-home"></i>Home</li> -->
-                        <li><i class="fa fa-laptop"></i><a href="clients.php">Clients</a></li>
-                        <li><i class="fa fa-laptop"></i><a href="clients_update_info.php" style="color: blue;">Update Info</a></li>                            
+                        <li><i class="fa fa-address-book"></i><a href="clients.php">Clients</a></li>
+                        <li><i class="fa fa-file-text"></i><a href="clients_update_info.php" style="color: blue;">Update Info</a></li>                            
                     </ol>
                 </div>
             </div>
@@ -305,7 +305,6 @@
 				WHERE client_contact_id = '".$sql_row['client_contact_id']."'";
 	$sql_no_result = mysqli_query($db, $sql_no);
 
-    $count = 0;
 	while ($sql_no_row = mysqli_fetch_assoc($sql_no_result)) {
 
         $array_contact['contact'][] = array(
@@ -322,7 +321,7 @@
 														<input type="text" name="update_contact_no[]" class="form-control" autocomplete="off" value="<?php echo $sql_no_row['client_contact_no']; ?>" required>
 													</div>
 													<div class="col-md-1">
-														<form action="clients_update_info.php" method="post" onsubmit="return confirm('Proceed?');">
+														<form action="clients_update_info.php" method="post" onsubmit="return confirm('Remove contact no. <?php echo $sql_no_row['client_contact_no']; ?>?');">
 															<input type="hidden" name="hidden_contact_id" value="<?php echo $sql_row['client_contact_id']; ?>">
 															<input type="hidden" name="hidden_contact_no_id" value="<?php echo $sql_no_row['client_contact_no_id']; ?>">
 															<button type="submit" name="delete_id" class='btn btn-danger btn-md' autocomplete="off">Remove</button>
@@ -339,7 +338,6 @@
 											</td> -->
 
 <?php
-        $count++;
 	}
 
 ?>
@@ -418,7 +416,7 @@
                                     WHERE client_contact_id = '$contact_id[$j]'";
 
                     // echo $update_name."<br>";
-                mysqli_query($db, $update_name);
+                    mysqli_query($db, $update_name);
                 }
                 if($count == count($contact_decode->contact)){
                     echo "<script> 
@@ -496,28 +494,28 @@
 
 			$delete_contact_no = "DELETE FROM client_contact_number WHERE client_contact_no_id = '$client_contact_no_id'";
 
-			// if(mysqli_query($db, $delete_contact_no)){
-			// 		phpAlert("Contact No. has been deleted...");
-			// 		echo "<meta http-equiv='refresh' content='0'>";
-			// }
-			echo $delete_contact_no."<br>";
+			if(mysqli_query($db, $delete_contact_no)){
+					phpAlert("Contact No. has been deleted...");
+					echo "<meta http-equiv='refresh' content='0'>";
+			}
+			// echo $delete_contact_no."<br>";
 		// }
 	
 		$sql_no_count_query = "SELECT * FROM client_contact_number
 								WHERE client_contact_id = '$client_contact_id'";
-
+        // echo $sql_no_count_query;
 		$sql_count = mysqli_query($db, $sql_no_count_query);
-		if(mysqli_num_rows($sql_count) < 0){
+		if(mysqli_num_rows($sql_count) == 0){
 
 			// for ($j=0; $j < count($client_contact_id); $j++) { 
 
 				$delete_contact_person = "DELETE FROM client_contact_person WHERE client_contact_id = '$client_contact_id'";
 
-				// if(mysqli_query($db, $delete_contact_person)){
-				// 	phpAlert("Contact has been deleted...");
-				// 	echo "<meta http-equiv='refresh' content='0'>";
-				// }
-				echo $delete_contact_person."<br>";
+				if(mysqli_query($db, $delete_contact_person)){
+					phpAlert("Contact has been deleted...");
+					echo "<meta http-equiv='refresh' content='0'>";
+				}
+				// echo $delete_contact_person."<br>";
 			// }
 		}
 		

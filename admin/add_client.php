@@ -268,13 +268,13 @@
 								</header>
 								<div class="panel-body">
 									<div class="form-group">
-										<label for="client_name" class="col-md-4 control-label">Client Name</label>
+										<label for="client_name" class="col-md-4 control-label">Client Name<span class="required" style="color: red;">*</span></label>
 										<div class="col-md-8">
 											<input type="text" id="client_name" name="client_name" class="form-control" autocomplete="off" required>
 										</div>
 									</div>
 									<div class="form-group">
-										<label for="client_address" class="col-md-4 control-label">Client Address</label>
+										<label for="client_address" class="col-md-4 control-label">Client Address<span class="required" style="color: red;">*</span></label>
 										<div class="col-md-8">
 											<input type="text" id="client_address" name="client_address" class="form-control" autocomplete="off" required>
 										</div>
@@ -299,10 +299,10 @@
 										<table id="item_table" align="center">
 											<tr>
 												<td class="col-md-4">
-													<label for="item_no">Name</label>
+													<label for="item_no">Name<span class="required" style="color: red;">*</span></label>
 												</td>
 												<td class="col-md-4">
-													<label for="quantity">Number</label>
+													<label for="quantity">Number<span class="required" style="color: red;">*</span></label>
 												</td>
 												<td class="col-md-4">
 													<label for="button"></label>
@@ -328,6 +328,10 @@
 										</table>
 									</div>
 								</div>
+								<footer class="panel-footer">
+									<p class="help-block"><span class="required" style="color: red;">*</span> - required</p>
+									<p class="help-block">Note: Put a comma between contact numbers</p>
+								</footer>
 							</section>
 						</div>
 					</div>
@@ -343,10 +347,10 @@
 
 		$count = 0;
 		$array_contact_name = array();
-		$client_name = $_POST['client_name'];
-		$address = $_POST['client_address'];
+		$client_name = mysqli_real_escape_string($db, $_POST['client_name']);
+		$address = mysqli_real_escape_string($db, $_POST['client_address']);
 		$contact_name = $_POST['contact_name'];
-		$contact_no = $_POST['contact_no'];
+		$contact_no = str_replace("-", "", $_POST['contact_no']);
 
 		$insert_client = "INSERT INTO client(client_name, address) VALUES('$client_name','$address')";
 
@@ -393,7 +397,8 @@
 			}
 			if($count == count($array_contact_name)){
 				phpAlert("New client added successfully.");
-				echo "<meta http-equiv='refresh' content='0'>";
+				// echo "<meta http-equiv='refresh' content='0'>";
+				header("loction: clients.php");
 			}
 			
 

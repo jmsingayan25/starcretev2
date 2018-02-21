@@ -5,6 +5,22 @@
 /* List of miscellaneous functions */
 	// function getSiteContactInfo($db, $)
 
+	function getClientInfoBySiteId($db, $site_id){
+
+		$sql = "SELECT c.client_id, client_name, address
+				FROM client c, site s
+				WHERE c.client_id = s.client_id
+				AND site_id = '$site_id'";
+
+		$result = mysqli_query($db, $sql);
+		$row = mysqli_fetch_assoc($result);
+
+		$client['client_id'] = $row['client_id'];
+		$client['client_name'] = $row['client_name'];
+		$client['address'] = $row['address'];
+
+		return $client;
+	}
 
 	function getPurchaseOrderDetails($db, $fk_po_id, $po_no_delivery){
 
@@ -111,7 +127,7 @@
 		// $order['fk_po_id'] = $row['fk_po_id'];
 		// $order['update_code'] = $row['update_code'];
 
-		$sql = "SELECT delivery_id, delivery_receipt_no, item_no, quantity, site_id, site_contact_id, gate_pass, po_no_delivery, date_delivery, office, remarks, fk_po_id
+		$sql = "SELECT delivery_id, delivery_receipt_no, item_no, quantity, site_id, site_contact_id, gate_pass, po_no_delivery, date_delivery, office, remarks, fk_po_id, psi
 				FROM delivery
 				WHERE delivery_id = '$delivery_id'";
 
@@ -121,6 +137,7 @@
 		$order['delivery_id'] = $row['delivery_id'];
 		$order['delivery_receipt_no'] = $row['delivery_receipt_no'];
 		$order['item_no'] = $row['item_no'];
+		$order['psi'] = $row['psi'];
 		$order['quantity'] = $row['quantity'];
 		$order['site_id'] = $row['site_id'];
 		$order['site_contact_id'] = $row['site_contact_id'];

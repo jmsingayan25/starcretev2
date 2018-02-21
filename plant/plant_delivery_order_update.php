@@ -181,8 +181,8 @@
 	                        <span class="menu-arrow arrow_carrot-right"></span>
 	                    </a>
 	                    <ul class="sub">
-	                    	<li><a class="" href="plant_delivery_issue.php">No DR. No. <span class='badge'><?php echo getCountPlantPo($db, $office); ?></span></a></li>       
-	                        <li><a class="" href="plant_delivery_order.php">On Delivery Order</a></li>          
+	                    	<li><a class="" href="plant_delivery_issue.php">Existing P.O. <span class='badge'><?php echo getCountPlantPo($db, $office); ?></span></a></li>       
+	                        <li><a class="" href="plant_delivery_order.php">On Delivery Order <span class="badge"><?php echo getDeliveryCountOnDeliveryOffice($db, $office); ?></span></a></li>          
 	                        <li><a class="" href="plant_delivery_delivered.php">Delivered Order</a></li>
 	                        <li><a class="" href="plant_delivery_backloaded.php">Backloaded Order</a></li>
 	                    </ul>

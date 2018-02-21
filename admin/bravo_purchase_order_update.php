@@ -152,6 +152,11 @@ session_start();
     });
 
 </script>
+<style>
+.page_links a{
+    color: inherit;
+}
+</style>
 </head>
 <body>
 <!-- container section start -->
@@ -254,12 +259,12 @@ session_start();
             <section class="wrapper">            
                 <!--overview start-->
                 <div class="row">
-                    <div class="col-lg-12">
-                        <h3 class="page-header"><i class="fa fa-building"></i> Purchase Order Update</h3>
+                    <div class="col-lg-12 page_links">
+                        <!-- <h3 class="page-header"><i class="fa fa-building"></i> Purchase Order Update</h3> -->
                         <ol class="breadcrumb">
                             <li><i class="fa fa-building"></i>Bravo</a></li>
-                            <li><a href="bravo_purchase_order.php"><i class="icon_document_alt"></i>Purchase Order</a></li>
-                            <li><i class="fa fa-building"></i>Update</a></li>					  	
+                            <li><a href="bravo_purchase_order.php"><i class="icon_document"></i>Purchase Order</a></li>
+                            <li><i class="fa fa-file-text"></i><a onclick="window.location.href=this" style="cursor: pointer; color: blue;">Update</a></li>					  	
                         </ol>
                     </div>
                 </div>
@@ -277,19 +282,22 @@ session_start();
 									<div class="form-group">
 										<label for="update_po_no" class="col-md-3 control-label">P.O. No.</label>
 										<div class="col-md-6">
-											<input type="text" id="update_po_no" name="update_po_no" value="<?php echo $purchase_row['purchase_order_no']; ?>" class="form-control" readonly>
+											<input type="hidden" id="update_po_no" name="update_po_no" value="<?php echo $purchase_row['purchase_order_no']; ?>" class="form-control" readonly>
+                                            <p class="help-block"><?php echo $purchase_row['purchase_order_no']; ?></p>
 										</div>
 									</div>
 									<div class="form-group">
 										<label for="update_address" class="col-md-3 control-label">Site Address</label>
 										<div class="col-md-6">
-											<input type="text" id="update_address" name="update_address" value="<?php echo $purchase_row['site_address']; ?>" class="form-control" readonly>
+											<input type="hidden" id="update_address" name="update_address" value="<?php echo $purchase_row['site_address']; ?>" class="form-control" readonly>
+                                            <p class="help-block"><?php echo $purchase_row['site_address']; ?></p>
 										</div>
 									</div>
 									<div class="form-group">
 										<label for="item_no" class="col-md-3 control-label">Current Item</label>
 										<div class="col-md-6">
-											<input type="text" id="item_no" name="item_no" value="<?php echo $purchase_row['item_no']; ?>" class="form-control" readonly>
+											<input type="hidden" id="item_no" name="item_no" value="<?php echo $purchase_row['item_no']; ?>" class="form-control" readonly>
+                                            <p class="help-block"><?php echo $purchase_row['item_no'] . " (" . $purchase_row['psi'] . " PSI)"; ?></p>
 										</div>
 									</div>
 									<div class="form-group">

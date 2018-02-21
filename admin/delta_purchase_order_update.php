@@ -152,6 +152,11 @@ session_start();
     });
 
 </script>
+<style>
+.page_links a{
+    color: inherit;
+}
+</style>
 </head>
 <body>
 <!-- container section start -->
@@ -254,12 +259,12 @@ session_start();
             <section class="wrapper">            
                 <!--overview start-->
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-lg-12 page_links">
                         <h3 class="page-header"><i class="fa fa-building"></i> Purchase Order Update</h3>
                         <ol class="breadcrumb">
                             <li><i class="fa fa-building"></i>Delta</a></li>
-                            <li><a href="delta_purchase_order.php"><i class="icon_document_alt"></i>Purchase Order</a></li>
-                            <li><i class="fa fa-building"></i>Update</a></li>					  	
+                            <li><a href="delta_purchase_order.php"><i class="icon_document"></i>Purchase Order</a></li>
+                            <li><i class="fa fa-file-text"></i><a onclick="window.location.href=this" style="cursor: pointer; color: blue;">Update</a></li>					  	
                         </ol>
                     </div>
                 </div>

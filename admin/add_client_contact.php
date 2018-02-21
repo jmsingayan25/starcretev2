@@ -224,7 +224,6 @@
 	                <div class="col-lg-12">
 	                    <h3 class="page-header"><i class="fa fa-laptop"></i> New Client Contacts</h3>
 	                    <ol class="breadcrumb">
-	                        <li><i class="fa fa-building"></i>Home</li>
 	                        <li><a href="clients.php"><i class="icon_document_alt"></i>Client</a></li>
 	                        <li><i class="icon_document_alt"></i>New Contact Person</li>						  	
 	                    </ol>
@@ -242,13 +241,13 @@
 										</header>
 										<div class="panel-body">
 											<div class="form-group">
-												<label for="site_name" class="col-md-4 control-label">Client Name: </label>
+												<label for="site_name" class="col-md-4 control-label">Client Name:</label>
 												<div class="col-md-8">
 													<label class="control-label"><?php echo $client_name; ?></label>
 												</div>
 											</div>
 											<div class="form-group">
-												<label for="site_address" class="col-md-4 control-label">Client Address: </label>
+												<label for="site_address" class="col-md-4 control-label">Client Address:</label>
 												<div class="col-md-8">
 													<label class="control-label"><?php echo $client_address; ?></label>
 												</div>
@@ -277,10 +276,10 @@
 												<table id="item_table" align="center">
 													<tr>
 														<td class="col-md-4">
-															<label for="item_no">Name</label>
+															<label for="item_no">Name<span class="required" style="color: red;">*</span></label>
 														</td>
 														<td class="col-md-4">
-															<label for="quantity">Number</label>
+															<label for="quantity">Number<span class="required" style="color: red;">*</span></label>
 														</td>
 														<td class="col-md-4">
 															<label for="button"></label>
@@ -306,6 +305,10 @@
 												</table>
 											</div>
 										</div>
+										<footer class="panel-footer">
+											<p class="help-block"><span class="required" style="color: red;">*</span> - required</p>
+											<p class="help-block">Note: Put a comma between contact numbers</p>
+										</footer>
 									</section>
 								</div>
 							</div>
@@ -323,7 +326,7 @@
 
 		$count = 0;
 		$contact_name = $_POST['contact_name'];
-		$contact_no = $_POST['contact_no'];
+		$contact_no = str_replace("-", "", $_POST['contact_no']);
 
 		for ($i=0; $i < count($contact_name); $i++) { 
 			

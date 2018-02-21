@@ -22,7 +22,7 @@
 
 			$row['site_contact_no'] = $num_row['site_contact_no'];
 			// echo "<option value='".$row['site_contact_person_id']."'>".$row['site_contact_name']."</option>";
-			echo "<input type='checkbox' name='contact_name[]' value='".$row['site_contact_person_id']."'> ".$row['site_contact_name']." (".$row['site_contact_no'].")<br>";
+			echo "<input type='hidden' name='contact_name[]' value='".$row['site_contact_person_id']."'> ".$row['site_contact_name']." (".$row['site_contact_no'].")<br>";
 		}
 	// }else{
 	// 	// echo '<option value="">Select</option>';

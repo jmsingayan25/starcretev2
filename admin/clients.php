@@ -28,7 +28,7 @@
 
     $office = $user['office'];
     $position = $user['position'];
-    $limit = 20;
+    $limit = 25;
 ?>
 <html lang="en">
 <head>
@@ -334,10 +334,10 @@
             <!--overview start-->
             <div class="row">
                 <div class="col-md-12">
-                    <h3 class="page-header"><i class="fa fa-laptop"></i> Clients</h3>
+                    <h3 class="page-header"><i class="fa fa-address-book"></i> Clients</h3>
                     <ol class="breadcrumb">
                         <!-- <li><i class="fa fa-home"></i>Home</li> -->
-                        <li><i class="fa fa-laptop"></i><a href="clients.php">Clients</a></li>                            
+                        <li><i class="fa fa-address-book"></i><a href="clients.php">Clients</a></li>                            
                     </ol>
                 </div>
             </div>
@@ -372,10 +372,10 @@
                             </form>
                         </header>
                         <div class="table-responsive filterable">
-                            <table class="table table-striped table-bordered" id="myTable">
+                            <table class="table table-striped table-bordered table-condensed" id="myTable">
                                 <thead>
                                     <tr class="filters">
-                                        <th class="col-md-3"><input type="text" class="form-control" placeholder="Client" disabled></th>
+                                        <th class="col-md-4"><input type="text" class="form-control" placeholder="Client" disabled></th>
                                         <th class="col-md-4"><input type="text" class="form-control" placeholder="Address" disabled></th>
                                         <th class="col-md-3">Contacts</th>
                                         <th class="col-md-1"></th>
@@ -504,9 +504,44 @@
             $row['client_contact_name'] = $row_contact['client_contact_name'];
 ?>
                                     <tr>
-                                        <td class="col-md-3"><strong><?php echo $row['client_name']; ?></strong></td>
+                                        <td class="col-md-4"><strong><?php echo $row['client_name']; ?></strong></td>
                                         <td class="col-md-4"><strong><?php echo $row['address']; ?></strong></td>
-                                        <td class="col-md-3"><strong><?php echo $row['client_contact_name']; ?></strong></td>
+                                        <td class="col-md-3">
+                                            
+<?php
+
+    $name_sql = "SELECT DISTINCT client_contact_id, client_contact_name
+                    FROM client_contact_person
+                    WHERE client_id = '".$row['client_id']."'";
+
+    $name_sql_result = mysqli_query($db, $name_sql);
+    while ($row_name_sql = mysqli_fetch_assoc($name_sql_result)) {
+        
+        $no_sql = "SELECT GROUP_CONCAT(DISTINCT client_contact_no SEPARATOR ', ') as client_contact_no
+                    FROM client_contact_number
+                    WHERE client_contact_id = '".$row_name_sql['client_contact_id']."'";
+
+        $no_sql_result = mysqli_query($db, $no_sql);
+        while ($row_no_sql = mysqli_fetch_assoc($no_sql_result)) {
+            
+            $row_name_sql['client_contact_no'] = $row_no_sql['client_contact_no'];
+?>
+                                                <!-- <tr style="border: none;">
+                                                    <td style="border: none;">
+                                                        <strong><?php echo $row_name_sql['client_contact_name'] . "<br> (" . $row_name_sql['client_contact_no'] . ")"; ?></strong>
+                                                    </td>
+                                                </tr> -->
+                                                <div class="row" style="margin-bottom: 2px;">
+                                                    <div class="col-md-12">
+                                                        <strong><?php echo $row_name_sql['client_contact_name'] . "<br> (" . $row_name_sql['client_contact_no'] . ")"; ?></strong>
+                                                    </div>
+                                                </div>
+<?php
+        }
+    }
+
+?>                       
+                                        </td>
                                         <td class="col-md-1">
                                             <div class="row">
                                                 <div class="col-md-1">
@@ -661,9 +696,40 @@
             $row['client_contact_name'] = $row_contact['client_contact_name'];
 ?>
                                     <tr>
-                                        <td class="col-md-3"><strong><?php echo $row['client_name']; ?></strong></td>
+                                        <td class="col-md-4"><strong><?php echo $row['client_name']; ?></strong></td>
                                         <td class="col-md-4"><strong><?php echo $row['address']; ?></strong></td>
-                                        <td class="col-md-3"><strong><?php echo $row['client_contact_name']; ?></strong></td>
+                                        <!-- <td class="col-md-3"><strong><?php echo $row['client_contact_name']; ?></strong></td> -->
+                                        <td class="col-md-3">
+                                            
+<?php
+
+    $name_sql = "SELECT DISTINCT client_contact_id, client_contact_name
+                    FROM client_contact_person
+                    WHERE client_id = '".$row['client_id']."'";
+
+    $name_sql_result = mysqli_query($db, $name_sql);
+    while ($row_name_sql = mysqli_fetch_assoc($name_sql_result)) {
+        
+        $no_sql = "SELECT GROUP_CONCAT(DISTINCT client_contact_no SEPARATOR ', ') as client_contact_no
+                    FROM client_contact_number
+                    WHERE client_contact_id = '".$row_name_sql['client_contact_id']."'";
+
+        $no_sql_result = mysqli_query($db, $no_sql);
+        while ($row_no_sql = mysqli_fetch_assoc($no_sql_result)) {
+            
+            $row_name_sql['client_contact_no'] = $row_no_sql['client_contact_no'];
+?>
+                                                <div class="row" style="margin-bottom: 2px;">
+                                                    <div class="col-md-12">
+                                                        <strong><?php echo $row_name_sql['client_contact_name'] . "<br> (" . $row_name_sql['client_contact_no'] . ")"; ?></strong>
+                                                    </div>
+                                                </div>
+<?php
+        }
+    }
+
+?>                       
+                                        </td>
                                         <td class="col-md-1">
                                             <div class="row">
                                                 <div class="col-md-1">

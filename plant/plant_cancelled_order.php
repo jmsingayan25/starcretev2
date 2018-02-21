@@ -309,8 +309,8 @@
                             <span class="menu-arrow arrow_carrot-right"></span>
                         </a>
                         <ul class="sub">
-                            <li><a class="" href="plant_delivery_issue.php">No DR. No. <span class='badge'><?php echo getCountPlantPo($db, $office); ?></span></a></li>    
-                            <li><a class="" href="plant_delivery_order.php">On Delivery Order</a></li>                      
+                            <li><a class="" href="plant_delivery_issue.php">Existing P.O. <span class='badge'><?php echo getCountPlantPo($db, $office); ?></span></a></li>    
+                            <li><a class="" href="plant_delivery_order.php">On Delivery Order <span class="badge"><?php echo getDeliveryCountOnDeliveryOffice($db, $office); ?></span></a></li>                      
                             <li><a class="" href="plant_delivery_delivered.php">Delivered Order</a></li>
                             <li><a class="" href="plant_delivery_backloaded.php">Backloaded Order</a></li>
                         </ul>
@@ -352,10 +352,6 @@
 	                                            <label for="end_date">End Date:</label><input type="date" name="end_date" class="form-control" value="<?php if(isset($_GET['end_date'])) { echo htmlentities ($_GET['end_date']); }?>">
                                             </div>
                                         </div>
-	                                        
-	                                    <!-- <div class="col-md-2" style="margin-top: 39px;">
-	                                        <input type="submit" name="search_table" id="search_table" value="Search" class="btn btn-primary">
-	                                    </div> -->
                                         <div class="input-group col-md-5" style="margin: 38px 0px 0px 0px;">
                                             <input type="text" name="search" class="form-control" placeholder="Search..." value="<?php if(isset($_GET['search'])) { echo htmlentities ($_GET['search']); }?>">
                                             <span class="input-group-btn">
@@ -415,30 +411,34 @@
         if($_GET['start_date'] == '' && $_GET['end_date'] == ''){
             $string_date = "";
         }else if($_GET['start_date'] == '' && $_GET['end_date'] != ''){
-            $string_date = "AND DATE_FORMAT(date_purchase,'%Y-%m-%d') <= '$end_date'";
+            $string_date = "AND DATE_FORMAT(date_cancelled,'%Y-%m-%d') <= '$end_date'";
         }else if($_GET['start_date'] != '' && $_GET['end_date'] == ''){
-            $string_date = "AND DATE_FORMAT(date_purchase,'%Y-%m-%d') >= '$start_date'";        
+            $string_date = "AND DATE_FORMAT(date_cancelled,'%Y-%m-%d') >= '$start_date'";        
         }else{
-            $string_date = "AND DATE_FORMAT(date_purchase,'%Y-%m-%d') BETWEEN '$start_date' AND '$end_date'";
+            $string_date = "AND DATE_FORMAT(date_cancelled,'%Y-%m-%d') BETWEEN '$start_date' AND '$end_date'";
         }
 ?>
                     <table class="table table-striped table-bordered">
                         <thead>
                             <tr class="filterable">
-                                <th colspan="10">
+                                <th colspan="7"></th>
+                                <th colspan="2" style="text-align: center;">
+                                    <p>Date</p>
+                                </th>
+                                <th colspan="1">
                                     <button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="fa fa-filter"></span> Filter</button>
                                 </th>
                             </tr>
                             <tr class="filters">
                                 <th>#</th>
                                 <th class="col-md-1"><input type="text" class="form-control" placeholder="P.O. No." disabled></th>
-                                <th class="col-md-1">Item</th>
+                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Item" disabled></th>
                                 <th class="col-md-1">Quantity</th>
                                 <th><input type="text" class="form-control" placeholder="Site Name" disabled></th>
-                                <th class="col-md-2">Address</th>
-                                <th class="col-md-1">Contact</th>
-                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Date Order" disabled></th>
-                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Date Cancel" disabled></th>
+                                <th class="col-md-2"><input type="text" class="form-control" placeholder="Address" disabled></th>
+                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Contact" disabled></th>
+                                <th class="col-md-1">Ordered</th>
+                                <th class="col-md-1">Cancelled</th>
                                 <th class="col-md-1">Status</th>
                             </tr>
                         </thead>
@@ -447,7 +447,10 @@
         
         $string = " WHERE office = '$search_plant'";
 
-        $sql = "SELECT * FROM purchase_order o, site s ".$string." ".$string_date." ".$string_ext."  
+        $sql = "SELECT * FROM purchase_order o, site s, purchase_order_contact c, site_contact_person p ".$string." 
+                AND o.purchase_id = c.purchase_id
+                AND c.site_contact_id = p.site_contact_person_id
+                AND o.site_id = s.site_id ".$string_date." ".$string_ext."  
                 AND date_cancelled != '' 
                 AND cancelled > 0
                 GROUP BY o.purchase_id";
@@ -540,16 +543,7 @@
             $pagination.= "</ul></div>\n"; 
         }
 
-        // $query = "SELECT p.purchase_id, p.purchase_order_no, c.site_name, p.item_no, CONCAT(FORMAT(p.cancelled,0), ' ', l.unit) as cancelled, delivered, backload, balance, c.address, contact_person, contact_no, DATE_FORMAT(date_purchase,'%m/%d/%y') as date_purchase, DATE_FORMAT(date_cancelled,'%m/%d/%y') as date_cancelled1, office, remarks
-        //             FROM purchase_order p, batch_list l, client c
-        //             ".$string." ".$string_date."
-        //             AND p.client_id = c.client_id
-        //             AND p.item_no = l.item_no 
-        //             AND date_cancelled != ''
-        //             AND p.cancelled > 0 
-        //             ORDER BY date_cancelled DESC LIMIT $start, $limit";
-
-        $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.cancelled, o.office, o.remarks, l.unit, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase, DATE_FORMAT(o.date_cancelled,'%m/%d/%y') as date_cancelled1 
+        $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.cancelled, o.office, o.remarks, l.unit, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase, DATE_FORMAT(o.date_cancelled,'%m/%d/%y') as date_cancelled1, o.psi 
                     FROM purchase_order o, batch_list l, site_contact_person p, site s, purchase_order_contact c
                     ".$string." ".$string_date."
                     AND o.purchase_id = c.purchase_id
@@ -560,7 +554,7 @@
                     AND o.cancelled > 0 
                     GROUP BY o.purchase_id
                     ORDER BY date_cancelled DESC LIMIT $start, $limit";
-// echo $query;
+        // echo $query;
         $result = mysqli_query($db, $query);
         if(mysqli_num_rows($result) > 0){
             $hash = 1;
@@ -571,11 +565,47 @@
                             <tr>
                                 <td><?php echo $hash; ?></td>
                                 <td class="col-md-1"><strong><?php echo $row['purchase_order_no']; ?></strong></td>
-                                <td class="col-md-1"><strong><?php echo $row['item_no']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['item_no'] . " (" . $row['psi'] . " PSI)"; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo number_format((float)$row['cancelled'])." pcs"; ?></strong></td>
                                 <td><strong><?php echo $row['site_name']; ?></strong></td>
                                 <td class="col-md-2"><strong><?php echo $row['site_address']; ?></strong></td>
-                                <td class="col-md-1"><strong><?php echo $row['site_contact_name']; ?></strong></td>
+                                <td class="col-md-1">
+<?php
+
+    $contact_sql = "SELECT DISTINCT p.site_contact_id, c.site_contact_name
+                    FROM purchase_order_contact p, purchase_order d, site_contact_person c
+                    WHERE d.purchase_id = p.purchase_id
+                    AND p.site_contact_id = c.site_contact_person_id
+                    AND d.purchase_id = '".$row['purchase_id']."'
+                    ORDER BY c.site_contact_name";
+                    // echo $contact_sql;
+    $contact_sql_result = mysqli_query($db, $contact_sql);
+    while ($contact_sql_row = mysqli_fetch_assoc($contact_sql_result)) {
+
+        $no_sql = "SELECT GROUP_CONCAT(site_contact_no SEPARATOR ', ') as site_contact_no 
+                    FROM site_contact_number
+                    WHERE site_contact_person_id = '".$contact_sql_row['site_contact_id']."'";
+
+        $no_sql_result = mysqli_query($db, $no_sql);
+        while ($no_sql_row = mysqli_fetch_assoc($no_sql_result)) {
+
+            $contact_sql_row['site_contact_no'] = $no_sql_row['site_contact_no'];
+?>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <strong><?php echo $contact_sql_row['site_contact_name'] . "<br> (" . $contact_sql_row['site_contact_no'] . ")"; ?></strong>
+                                            </div>
+                                        </div>
+<?php
+         } 
+?>
+                                        
+
+
+<?php
+    }
+?>
+                                </td>
                                 <td class="col-md-1"><strong><?php echo $row['date_purchase']; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo $row['date_cancelled1']; ?></strong></td>
                                 <td class="col-md-1" style="background: #e60000; color: white;">
@@ -608,7 +638,11 @@
         }
 
         if($_GET['search'] != ''){
-            $string_ext = " AND (o.purchase_order_no LIKE '%".$search_word."%' OR o.item_no LIKE '%".$search_word."%' OR s.site_name LIKE '%".$search_word."%' OR s.site_address LIKE '%".$search_word."%') ";
+            $string_ext = " AND (o.purchase_order_no LIKE '%".$search_word."%' 
+                                OR o.item_no LIKE '%".$search_word."%' 
+                                OR s.site_name LIKE '%".$search_word."%' 
+                                OR s.site_address LIKE '%".$search_word."%'
+                                OR p.site_contact_name LIKE '%".$search_word."%') ";
         }else{
             $string_ext = "";
         }
@@ -628,31 +662,35 @@
         if($_GET['start_date'] == '' && $_GET['end_date'] == ''){
             $string_date = "";
         }else if($_GET['start_date'] == '' && $_GET['end_date'] != ''){
-            $string_date = "AND DATE_FORMAT(date_purchase,'%Y-%m-%d') <= '$end_date'";
+            $string_date = "AND DATE_FORMAT(date_cancelled,'%Y-%m-%d') <= '$end_date'";
         }else if($_GET['start_date'] != '' && $_GET['end_date'] == ''){
-            $string_date = "AND DATE_FORMAT(date_purchase,'%Y-%m-%d') >= '$start_date'";        
+            $string_date = "AND DATE_FORMAT(date_cancelled,'%Y-%m-%d') >= '$start_date'";        
         }else{
-            $string_date = "AND DATE_FORMAT(date_purchase,'%Y-%m-%d') BETWEEN '$start_date' AND '$end_date'";
+            $string_date = "AND DATE_FORMAT(date_cancelled,'%Y-%m-%d') BETWEEN '$start_date' AND '$end_date'";
         }
 
 ?>
                     <table class="table table-striped table-bordered">
                         <thead>
                             <tr class="filterable">
-                                <th colspan="10">
+                                <th colspan="7"></th>
+                                <th colspan="2" style="text-align: center;">
+                                    <p>Date</p>
+                                </th>
+                                <th colspan="1">
                                     <button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="fa fa-filter"></span> Filter</button>
                                 </th>
                             </tr>
                             <tr class="filters">
                                 <th>#</th>
                                 <th class="col-md-1"><input type="text" class="form-control" placeholder="P.O. No." disabled></th>
-                                <th class="col-md-1">Item</th>
+                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Item" disabled></th>
                                 <th class="col-md-1">Quantity</th>
                                 <th><input type="text" class="form-control" placeholder="Site Name" disabled></th>
-                                <th class="col-md-2">Address</th>
-                                <th class="col-md-1">Contact</th>
-                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Date Order" disabled></th>
-                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Date Cancel" disabled></th>
+                                <th class="col-md-2"><input type="text" class="form-control" placeholder="Address" disabled></th>
+                                <th class="col-md-1"><input type="text" class="form-control" placeholder="Contact" disabled></th>
+                                <th class="col-md-1">Ordered</th>
+                                <th class="col-md-1">Cancelled</th>
                                 <th class="col-md-1">Status</th>
                             </tr>
                         </thead>
@@ -661,7 +699,10 @@
         
         $string = " WHERE office = '$search_plant'";
 
-        $sql = "SELECT * FROM purchase_order o, site s ".$string." ".$string_date." ".$string_ext."  
+        $sql = "SELECT * FROM purchase_order o, site s, purchase_order_contact c, site_contact_person p ".$string." 
+                AND o.purchase_id = c.purchase_id
+                AND c.site_contact_id = p.site_contact_person_id
+                AND o.site_id = s.site_id ".$string_date." ".$string_ext."  
                 AND date_cancelled != '' 
                 AND cancelled > 0
                 GROUP BY o.purchase_id";
@@ -754,16 +795,7 @@
             $pagination.= "</ul></div>\n"; 
         }
 
-        // $query = "SELECT p.purchase_id, p.purchase_order_no, c.site_name, p.item_no, CONCAT(FORMAT(p.cancelled,0), ' ', l.unit) as cancelled, delivered, backload, balance, c.address, contact_person, contact_no, DATE_FORMAT(date_purchase,'%m/%d/%y') as date_purchase, DATE_FORMAT(date_cancelled,'%m/%d/%y') as date_cancelled1, office, remarks
-        //             FROM purchase_order p, batch_list l, client c
-        //             ".$string." ".$string_date."
-        //             AND p.client_id = c.client_id
-        //             AND p.item_no = l.item_no 
-        //             AND date_cancelled != ''
-        //             AND p.cancelled > 0 
-        //             ORDER BY date_cancelled DESC LIMIT $start, $limit";
-
-        $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.cancelled, o.office, o.remarks, l.unit, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase, DATE_FORMAT(o.date_cancelled,'%m/%d/%y') as date_cancelled1 
+        $query = "SELECT o.purchase_id, o.purchase_order_no, o.item_no, o.quantity, o.delivered, o.backload, o.balance, o.cancelled, o.office, o.remarks, l.unit, s.site_name, s.site_address, GROUP_CONCAT(DISTINCT p.site_contact_name ORDER BY p.site_contact_name ASC SEPARATOR ', ') as site_contact_name, DATE_FORMAT(o.date_purchase,'%m/%d/%y') as date_purchase, DATE_FORMAT(o.date_cancelled,'%m/%d/%y') as date_cancelled1, o.psi 
                     FROM purchase_order o, batch_list l, site_contact_person p, site s, purchase_order_contact c
                     ".$string." ".$string_date."
                     AND o.purchase_id = c.purchase_id
@@ -785,11 +817,47 @@
                             <tr>
                                 <td><?php echo $hash; ?></td>
                                 <td class="col-md-1"><strong><?php echo $row['purchase_order_no']; ?></strong></td>
-                                <td class="col-md-1"><strong><?php echo $row['item_no']; ?></strong></td>
+                                <td class="col-md-1"><strong><?php echo $row['item_no'] . " (" . $row['psi'] . " PSI)"; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo number_format((float)$row['cancelled'])." pcs"; ?></strong></td>
                                 <td><strong><?php echo $row['site_name']; ?></strong></td>
                                 <td class="col-md-2"><strong><?php echo $row['site_address']; ?></strong></td>
-                                <td class="col-md-1"><strong><?php echo $row['site_contact_name']; ?></strong></td>
+                                <td class="col-md-1">
+<?php
+
+    $contact_sql = "SELECT DISTINCT p.site_contact_id, c.site_contact_name
+                    FROM purchase_order_contact p, purchase_order d, site_contact_person c
+                    WHERE d.purchase_id = p.purchase_id
+                    AND p.site_contact_id = c.site_contact_person_id
+                    AND d.purchase_id = '".$row['purchase_id']."'
+                    ORDER BY c.site_contact_name";
+                    // echo $contact_sql;
+    $contact_sql_result = mysqli_query($db, $contact_sql);
+    while ($contact_sql_row = mysqli_fetch_assoc($contact_sql_result)) {
+
+        $no_sql = "SELECT GROUP_CONCAT(site_contact_no SEPARATOR ', ') as site_contact_no 
+                    FROM site_contact_number
+                    WHERE site_contact_person_id = '".$contact_sql_row['site_contact_id']."'";
+
+        $no_sql_result = mysqli_query($db, $no_sql);
+        while ($no_sql_row = mysqli_fetch_assoc($no_sql_result)) {
+
+            $contact_sql_row['site_contact_no'] = $no_sql_row['site_contact_no'];
+?>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <strong><?php echo $contact_sql_row['site_contact_name'] . "<br> (" . $contact_sql_row['site_contact_no'] . ")"; ?></strong>
+                                            </div>
+                                        </div>
+<?php
+         } 
+?>
+                                        
+
+
+<?php
+    }
+?>
+                                </td>
                                 <td class="col-md-1"><strong><?php echo $row['date_purchase']; ?></strong></td>
                                 <td class="col-md-1"><strong><?php echo $row['date_cancelled1']; ?></strong></td>
                                 <td class="col-md-1" style="background: #e60000; color: white;">

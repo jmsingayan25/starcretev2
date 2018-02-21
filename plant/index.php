@@ -333,7 +333,7 @@
                     </a>
                     <ul class="sub">
                         <li><a class="" href="plant_delivery_issue.php">No DR. No. <span class='badge'><?php echo getCountPlantPo($db, $office); ?></span></a></li>    
-                        <li><a class="" href="plant_delivery_order.php">On Delivery Order</a></li>                          
+                        <li><a class="" href="plant_delivery_order.php">On Delivery Order <span class="badge"><?php echo getDeliveryCountOnDeliveryOffice($db, $office); ?></span></a></li>                          
                         <li><a class="" href="plant_delivery_delivered.php">Delivered Order</a></li>
                         <li><a class="" href="plant_delivery_backloaded.php">Backloaded Order</a></li>
                     </ul>
@@ -446,8 +446,8 @@
                             <table class="table table-striped table-bordered" id="myTable">
                                 <thead>
                                     <tr class="filterable">
-                                        <th colspan="2"></th>
-                                        <th colspan="1">
+                                       
+                                        <th colspan="3">
                                             <button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="fa fa-filter"></span> Filter</button>
                                         </th>
                                     </tr>
@@ -646,8 +646,8 @@
                 <table class="table table-striped table-bordered" id="myTable">
                     <thead>
                         <tr class="filterable">
-                            <th colspan="2"></th>
-                            <th colspan="1">
+                           
+                            <th colspan="3">
                                 <button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="fa fa-filter"></span> Filter</button>
                             </th>
                         </tr>

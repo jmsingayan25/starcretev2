@@ -302,8 +302,8 @@
                             <span class="menu-arrow arrow_carrot-right"></span>
                         </a>
                         <ul class="sub">
-                            <li><a class="" href="plant_delivery_issue.php">No DR. No. <span class='badge'><?php echo getCountPlantPo($db, $office); ?></span></a></li>   
-                            <li><a class="" href="plant_delivery_order.php">On Delivery Order</a></li>                   
+                            <li><a class="" href="plant_delivery_issue.php">Existing P.O. <span class='badge'><?php echo getCountPlantPo($db, $office); ?></span></a></li>   
+                            <li><a class="" href="plant_delivery_order.php">On Delivery Order <span class="badge"><?php echo getDeliveryCountOnDeliveryOffice($db, $office); ?></span></a></li>                  
                             <li><a class="" href="plant_delivery_delivered.php">Delivered Order</a></li>
                             <li><a class="" href="plant_delivery_backloaded.php">Backloaded Order</a></li>
                         </ul>
@@ -338,12 +338,101 @@
                             <div class="table-responsive filterable">
                                 <table class="table table-striped table-bordered">
                                     <thead>
-                                        <tr class="filterable">
-                                            <th colspan="2" style="text-align: left;">Balance: <?php echo number_format(getDeliveryBalance($db, $po_no_delivery, $fk_po_id)); ?> pcs</th>
-                                            <th colspan="2">Delivered: <?php echo number_format(getDeliveryDelivered($db, $po_no_delivery, $office)); ?> pcs</th>
-                                            <th colspan="2">On Delivery: <?php echo number_format(getDeliveryOnDelivery($db, $po_no_delivery, $office)); ?> pcs</th>
-                                            <th colspan="4">
-                                                <button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="glyphicon glyphicon-filter"></span> Filter</button>
+                                                                                <tr class="filterable">
+                                            <!-- <th colspan="2" style="text-align: left;">Balance: <?php echo number_format(getDeliveryBalance($db, $po_no_delivery, $fk_po_id)); ?> pcs</th> -->
+                                            <th colspan="2">
+                                                
+<?php
+
+    $balance_sql = "SELECT item_no, SUM(balance) as balance 
+            FROM purchase_order 
+            WHERE purchase_order_no = '$po_no_delivery'
+            GROUP BY purchase_id";
+
+    $result_sql = mysqli_query($db, $balance_sql);
+
+    if(mysqli_num_rows($result_sql) > 0){
+
+        echo "Item Balance";
+        while ($balance_sql_row = mysqli_fetch_assoc($result_sql)) {
+            echo "<br>" . $balance_sql_row['item_no'] . ": ". number_format($balance_sql_row['balance']) . " pcs";
+        }  
+    }
+    
+
+?>
+                                            </th>
+                                            <th colspan="2">
+                                            
+                                                <!-- <?php echo number_format(getDeliveryDelivered($db, $po_no_delivery, '$office')); ?> pcs</th> -->
+<?php
+    
+    $delivered_sql = "SELECT item_no, SUM(quantity) as quantity
+                        FROM delivery
+                        WHERE remarks = 'Delivered'
+                        AND office = '$office'
+                        AND po_no_delivery = '$po_no_delivery'
+                        GROUP BY item_no";
+
+    $delivered_result_sql = mysqli_query($db, $delivered_sql);
+
+    if(mysqli_num_rows($delivered_result_sql) > 0){
+
+        echo "Delivered";
+        while ($deliver_sql_row = mysqli_fetch_assoc($delivered_result_sql)) {
+            echo "<br>" . $deliver_sql_row['item_no'] . ": " . number_format($deliver_sql_row['quantity']) . " pcs";
+        }
+    }
+    
+
+?>
+                                            <th colspan="1">
+                                          
+                                                <!-- <?php echo number_format(getDeliveryOnDelivery($db, $po_no_delivery, '$office')); ?> pcs</th> -->
+<?php
+
+    $ondelivery_sql = "SELECT item_no, SUM(quantity) as quantity
+                        FROM delivery
+                        WHERE remarks = 'On Delivery'
+                        AND office = '$office'
+                        AND po_no_delivery = '$po_no_delivery'
+                        GROUP BY item_no";
+
+    $ondelivery_result_sql = mysqli_query($db, $ondelivery_sql);
+
+    if(mysqli_num_rows($ondelivery_result_sql) > 0){
+
+        echo "On Delivery";
+        while ($ondelivery_sql_row = mysqli_fetch_assoc($ondelivery_result_sql)) {
+            echo "<br>" . $ondelivery_sql_row['item_no'] . ": " . number_format($ondelivery_sql_row['quantity']) . " pcs";
+        } 
+    }
+    
+?>
+                                            <th colspan="1">
+                                                
+<?php
+
+    $backload_sql = "SELECT item_no, SUM(quantity) as quantity
+                        FROM delivery
+                        WHERE remarks = 'Backload'
+                        AND office = '$office'
+                        AND po_no_delivery = '$po_no_delivery'
+                        GROUP BY item_no";
+
+    $backload_result_sql = mysqli_query($db, $backload_sql);
+    if(mysqli_num_rows($backload_result_sql) > 0){
+
+        echo "Backloaded";
+         while ($backload_sql_row = mysqli_fetch_assoc($backload_result_sql)) {
+            echo "<br>" . $backload_sql_row['item_no'] . ": " . number_format($backload_sql_row['quantity']) . " pcs";
+        }
+    }
+   
+?>                                               
+                                            </th>
+                                            <th colspan="3">
+                                                <button class="btn btn-default btn-xs btn-filter" style="float: right;"><span class="fa fa-filter"></span> Filter</button>
                                             </th>
                                         </tr>
                                         <tr class="filters">
